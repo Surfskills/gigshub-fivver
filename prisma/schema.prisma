@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Platform {
+  fiverr
+  upwork
+  direct
+}
+
+enum AccountStatus {
+  active
+  paused
+  risk
+}
+
+enum GigStatus {
+  active
+  paused
+  deprecated
+}
+
+enum Shift {
+  AM
+  PM
+}
+
+enum UserRole {
+  admin
+  operator
+}
+
+model User {
+  id            String    @id @default(cuid())
+  clerkId       String    @unique // or supabaseId
+  email         String    @unique
+  name          String
+  role          UserRole  @default(operator)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  shiftReports  ShiftReport[]
+  
+  @@index([clerkId])
+}
+
+model Account {
+  id            String        @id @default(cuid())
+  platform      Platform
+  email         String
+  username      String
+  typeOfGigs    String        // e.g., "API Development, MVP Building"
+  currency      String        @default("USD")
+  status        AccountStatus @default(active)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  gigs          Gig[]
+  shiftReports  ShiftReport[]
+  
+  @@unique([platform, email])
+  @@index([status])
+}
+
+model Gig {
+  id            String      @id @default(cuid())
+  accountId     String
+  name          String
+  type          String      // API, MVP, CICD, etc.
+  rated         Boolean     @default(false)
+  status        GigStatus   @default(active)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  account       Account     @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  
+  @@index([accountId])
+  @@index([status])
+}
+
+model ShiftReport {
+  id                String    @id @default(cuid())
+  accountId         String
+  reportDate        DateTime  @db.Date // YYYY-MM-DD only
+  shift             Shift
+  
+  // Metrics
+  ordersCompleted   Int       @default(0)
+  pendingOrders     Int       @default(0)
+  availableBalance  Decimal   @db.Decimal(10, 2)
+  pendingBalance    Decimal   @db.Decimal(10, 2)
+  rankingPage       Int?      // nullable if not applicable
+  notes             String?   @db.Text
+  
+  // Audit
+  reportedByUserId  String
+  createdAt         DateTime  @default(now())
+  
+  account           Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  reportedBy        User      @relation(fields: [reportedByUserId], references: [id])
+  
+  // CRITICAL: Only one report per account per date per shift
+  @@unique([accountId, reportDate, shift])
+  @@index([reportDate, shift])
+  @@index([accountId])
+}
