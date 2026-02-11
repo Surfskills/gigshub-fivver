@@ -4,6 +4,9 @@ import { sendMissingReportsAlert } from '@/lib/email/send';
 import { db } from '@/lib/db';
 import { format } from 'date-fns';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET(request: Request) {
   const authHeader = request.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
