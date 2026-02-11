@@ -102,7 +102,7 @@ const AccountCard = memo(({ row }: { row: AccountRow }) => {
       </div>
 
       {/* Desktop Table Row (hidden on mobile) */}
-      <div className="hidden md:grid md:grid-cols-10 md:gap-4 md:items-center">
+      <div className="hidden md:grid md:grid-cols-10 md:gap-4 md:items-center md:px-4 md:py-3">
         <div>
           {row.rankingPage != null ? (
             <span
@@ -138,20 +138,20 @@ const AccountCard = memo(({ row }: { row: AccountRow }) => {
         <div>
           <StatusBadge status={row.status} />
         </div>
-        <div className="text-right font-medium">{row.gigsCount}</div>
-        <div className="text-right font-medium">{row.reportsCount}</div>
-        <div className="flex gap-3 justify-end">
+        <div className="text-right font-medium pr-4">{row.gigsCount}</div>
+        <div className="text-right font-medium pr-6 min-w-[2.5rem]">{row.reportsCount}</div>
+        <div className="flex gap-5 justify-end pl-6 min-w-[8rem]">
           <Link
             href={reportsHistoryUrl(row.id)}
             prefetch={false}
-            className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+            className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors py-1.5 px-2 rounded hover:bg-blue-50"
           >
             Reports
           </Link>
           <Link
             href={`/reports?accountId=${row.id}`}
             prefetch={false}
-            className="text-sm font-medium text-emerald-600 hover:text-emerald-800 transition-colors"
+            className="text-sm font-medium text-emerald-600 hover:text-emerald-800 transition-colors py-1.5 px-2 rounded hover:bg-emerald-50"
           >
             Submit
           </Link>
@@ -197,7 +197,7 @@ export function AccountsTable({ rows }: AccountsTableProps) {
       {/* Desktop: Table View */}
       <div className="hidden md:block rounded-lg border border-gray-200 overflow-hidden bg-white">
         {/* Table Header */}
-        <div className="grid grid-cols-10 gap-4 p-3 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-700">
+        <div className="grid grid-cols-10 gap-4 px-4 py-3 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-700">
           <div>Rank</div>
           <div>Platform</div>
           <div>Username</div>
@@ -205,9 +205,9 @@ export function AccountsTable({ rows }: AccountsTableProps) {
           <div>Type of gigs</div>
           <div>Level</div>
           <div>Status</div>
-          <div className="text-right">Gigs</div>
-          <div className="text-right">Reports</div>
-          <div className="text-right">Actions</div>
+          <div className="text-right pr-4">Gigs</div>
+          <div className="text-right pr-6">Reports</div>
+          <div className="text-right pl-6">Actions</div>
         </div>
 
         {/* Table Body */}
