@@ -33,7 +33,7 @@ export function DashboardLayoutClient({ children, user }: DashboardLayoutClientP
   }, [mobileMenuOpen]);
 
   const navLinks = [
-    { href: '/', label: 'Dashboard', icon: '📊' },
+    { href: '/dashboard', label: 'Dashboard', icon: '📊' },
     { href: '/accounts', label: 'Accounts', icon: '👥' },
     { href: '/reports', label: 'Submit Reports', icon: '📝' },
     { href: '/reports/history', label: 'History', icon: '📋' },
@@ -46,7 +46,7 @@ export function DashboardLayoutClient({ children, user }: DashboardLayoutClientP
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-14 items-center justify-between sm:h-16">
             <div className="flex items-center gap-6 lg:gap-8">
-              <Link href="/" prefetch className="flex-shrink-0 text-lg font-bold text-gray-900 transition-opacity hover:opacity-80 sm:text-xl">
+              <Link href="/dashboard" prefetch className="flex-shrink-0 text-lg font-bold text-gray-900 transition-opacity hover:opacity-80 sm:text-xl">
                 <span className="hidden sm:inline">Mini Gigs-Hub </span>
                 <span className="sm:hidden">Gigs-Hub</span>
               </Link>
@@ -61,7 +61,7 @@ export function DashboardLayoutClient({ children, user }: DashboardLayoutClientP
             <div className="flex items-center gap-3 sm:gap-4">
               <span className="hidden text-sm text-gray-600 sm:inline-block">{user.name}</span>
               <div className="flex-shrink-0">
-                <UserButton afterSignOutUrl="/sign-in" />
+                <UserButton afterSignOutUrl="/" />
               </div>
               <button
                 type="button"
