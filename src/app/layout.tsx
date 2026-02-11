@@ -43,32 +43,25 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <head>
-          {/* Preconnect to external domains for performance */}
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          
-          {/* PWA meta tags */}
-          <meta name="mobile-web-app-capable" content="yes" />
-          <meta name="apple-mobile-web-app-capable" content="yes" />
-          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-          
-          {/* Prevent auto-zoom on input focus (iOS) */}
-          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
-        </head>
-        <body 
-          className={`${inter.className} antialiased`}
-          suppressHydrationWarning
-        >
-          {/* Mobile-first safe area support */}
-          <div className="min-h-screen bg-gray-50 pb-safe">
-            {children}
-          </div>
-        </body>
-      </html>
-    </ClerkProvider>
+  const inner = (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
+      </head>
+      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
+        <div className="min-h-screen bg-gray-50 pb-safe">{children}</div>
+      </body>
+    </html>
   );
+
+  const hasClerkKeys =
+    Boolean(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) &&
+    Boolean(process.env.CLERK_SECRET_KEY);
+
+  return hasClerkKeys ? <ClerkProvider>{inner}</ClerkProvider> : inner;
 }
