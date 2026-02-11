@@ -3,6 +3,9 @@ import { notFound } from 'next/navigation';
 import { getReportById } from '@/lib/actions/reports';
 import { ReportEditForm } from '@/components/forms/report-edit-form';
 
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+
 interface ReportEditPageProps {
   params: Promise<{ id: string; reportId: string }>;
 }

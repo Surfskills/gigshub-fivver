@@ -5,6 +5,8 @@ import { getAccountsRankedByPage } from '@/lib/queries/accounts';
 import { ExportButton } from '@/components/export-button';
 import { AccountsTable } from '@/components/tables/accounts-table';
 
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
 // Metadata for SEO
 export const metadata = {
   title: 'Accounts | Freelance Manager',

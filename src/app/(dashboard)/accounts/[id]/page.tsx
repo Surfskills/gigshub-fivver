@@ -8,6 +8,9 @@ import { AccountReportsSection } from '@/components/account-reports-section';
 import { reportsHistoryUrl } from '@/lib/urls';
 import { formatAccountLevel, getAccountLevelStyle } from '@/lib/account-level';
 
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+
 interface AccountDetailPageProps {
   params: {
     id: string;

@@ -6,6 +6,7 @@ import { updateAccount } from '@/lib/actions/accounts';
 import { AccountForm } from '@/components/forms/account-form';
 
 export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
 
 // Prevent static generation - all paths are dynamic
 export async function generateStaticParams() {
