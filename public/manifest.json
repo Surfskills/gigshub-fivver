@@ -1,10 +1,1 @@
-{
-  "name": "Freelance Operations Brain",
-  "short_name": "Freelance Ops",
-  "description": "Operations & Reporting Dashboard for Freelancing Accounts",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#0f172a",
-  "icons": []
-}
+{"name":"Freelance Operations Brain","short_name":"Freelance Ops","description":"Operations & Reporting Dashboard for Freelancing Accounts","start_url":"/","display":"standalone","background_color":"#ffffff","theme_color":"#0f172a","icons":[{"src":"/vercel.ico","sizes":"48x48","type":"image/x-icon","purpose":"any"}]}

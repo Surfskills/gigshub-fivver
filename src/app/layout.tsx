@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   title: 'Freelance Operations Brain',
   description: 'Operations & Reporting Dashboard for Freelancing Accounts',
   manifest: '/manifest.json',
+  icons: {
+    icon: '/vercel.ico',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
