@@ -3,7 +3,7 @@
 import { db } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
-import { Platform, AccountStatus } from '@prisma/client';
+import { Platform, AccountStatus, AccountLevel } from '@prisma/client';
 
 export async function createAccount(data: {
   platform: Platform;
@@ -11,6 +11,7 @@ export async function createAccount(data: {
   username: string;
   typeOfGigs: string;
   currency?: string;
+  accountLevel?: AccountLevel;
 }) {
   await requireAdmin();
 
@@ -22,6 +23,7 @@ export async function createAccount(data: {
         username: data.username,
         typeOfGigs: data.typeOfGigs,
         currency: data.currency || 'USD',
+        accountLevel: data.accountLevel || 'starter',
       },
     });
 
@@ -42,6 +44,7 @@ export async function updateAccount(
     typeOfGigs?: string;
     currency?: string;
     status?: AccountStatus;
+    accountLevel?: AccountLevel;
   }
 ) {
   await requireAdmin();

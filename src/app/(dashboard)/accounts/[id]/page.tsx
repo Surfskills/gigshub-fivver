@@ -6,6 +6,7 @@ import { GigForm } from '@/components/forms/gig-form';
 import { GigRatingEdit } from '@/components/gig-rating-edit';
 import { AccountReportsSection } from '@/components/account-reports-section';
 import { reportsHistoryUrl } from '@/lib/urls';
+import { formatAccountLevel, getAccountLevelStyle } from '@/lib/account-level';
 
 interface AccountDetailPageProps {
   params: {
@@ -80,7 +81,13 @@ export default async function AccountDetailPage({ params }: AccountDetailPagePro
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
+        <div className="rounded-lg border bg-white p-4">
+          <div className="text-sm text-gray-500">Level</div>
+          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium mt-1 ${getAccountLevelStyle(account.accountLevel)}`}>
+            {formatAccountLevel(account.accountLevel)}
+          </span>
+        </div>
         <div className="rounded-lg border bg-white p-4">
           <div className="text-sm text-gray-500">Status</div>
           <div className="text-lg font-semibold">{account.status}</div>

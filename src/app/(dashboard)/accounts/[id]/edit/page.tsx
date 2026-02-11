@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
-import { AccountStatus } from '@prisma/client';
+import { AccountLevel, AccountStatus } from '@prisma/client';
 import { getAccountById } from '@/lib/queries/accounts';
 import { updateAccount } from '@/lib/actions/accounts';
 import { AccountForm } from '@/components/forms/account-form';
@@ -37,12 +37,14 @@ export default async function EditAccountPage({ params }: EditAccountPageProps) 
     const typeOfGigs = (formData.get('typeOfGigs') as string) ?? acc.typeOfGigs;
     const currency = (formData.get('currency') as string) ?? acc.currency;
     const status = (formData.get('status') as AccountStatus) ?? acc.status;
+    const accountLevel = (formData.get('accountLevel') as AccountLevel) ?? acc.accountLevel;
 
     const result = await updateAccount(params.id, {
       username,
       typeOfGigs,
       currency,
       status,
+      accountLevel,
     });
 
     if (result.success) {
@@ -81,6 +83,7 @@ export default async function EditAccountPage({ params }: EditAccountPageProps) 
                   typeOfGigs: account.typeOfGigs,
                   currency: account.currency,
                   status: account.status,
+                  accountLevel: account.accountLevel,
                 }}
               />
             </Suspense>

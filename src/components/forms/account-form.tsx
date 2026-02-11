@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import { AccountStatus, Platform } from '@prisma/client';
+import { AccountStatus, AccountLevel, Platform } from '@prisma/client';
 import { SubmitButton } from '@/components/ui/submit-button';
 
 interface AccountFormProps {
@@ -11,6 +11,7 @@ interface AccountFormProps {
     typeOfGigs?: string;
     currency?: string;
     status?: AccountStatus;
+    accountLevel?: AccountLevel;
   };
   submitLabel?: string;
   isEdit?: boolean;
@@ -22,6 +23,15 @@ const PLATFORM_CONFIG = {
   upwork: { label: 'Upwork', icon: '🔵' },
   direct: { label: 'Direct Client', icon: '💼' },
 } as const;
+
+// Account level options
+const ACCOUNT_LEVEL_OPTIONS: { value: AccountLevel; label: string }[] = [
+  { value: 'starter', label: 'Starter' },
+  { value: 'level1', label: 'Level 1' },
+  { value: 'level2', label: 'Level 2' },
+  { value: 'proRated', label: 'Pro Rated' },
+  { value: 'fivverVetted', label: 'Fivver Vetted' },
+];
 
 // Status configuration with colors
 const STATUS_CONFIG = {
@@ -246,6 +256,36 @@ export const AccountForm = memo(({
             placeholder="e.g., API Development, MVP Building, Full-Stack Development"
             helpText="Comma-separated list of services you offer"
           />
+        </div>
+
+        {/* Account Level */}
+        <div className="mb-5 sm:mb-6">
+          <FormField
+            label="Account Level"
+            name="accountLevel"
+            type="select"
+            required
+            helpText="Platform seller level (e.g., Starter, Level 1, Fivver Vetted)"
+          >
+            <select
+              id="accountLevel"
+              name="accountLevel"
+              defaultValue={defaultValues?.accountLevel ?? 'starter'}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 sm:py-2.5 text-sm sm:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none hover:border-gray-400 appearance-none cursor-pointer"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                backgroundPosition: 'right 0.75rem center',
+                backgroundRepeat: 'no-repeat',
+                backgroundSize: '16px 16px',
+              }}
+            >
+              {ACCOUNT_LEVEL_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </FormField>
         </div>
 
         {/* Status (Edit Mode Only) */}

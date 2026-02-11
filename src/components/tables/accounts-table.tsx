@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { memo } from 'react';
-import { AccountStatus, Platform } from '@prisma/client';
+import { AccountLevel, AccountStatus, Platform } from '@prisma/client';
 import { reportsHistoryUrl } from '@/lib/urls';
+import { formatAccountLevel, getAccountLevelStyle } from '@/lib/account-level';
 
 interface AccountRow {
   id: string;
@@ -10,8 +11,10 @@ interface AccountRow {
   email: string;
   typeOfGigs: string;
   status: AccountStatus;
+  accountLevel: AccountLevel;
   gigsCount: number;
   reportsCount: number;
+  rankingPage?: number | null;
 }
 
 interface AccountsTableProps {
@@ -24,11 +27,25 @@ const AccountCard = memo(({ row }: { row: AccountRow }) => {
     <div className="bg-white border-b last:border-b-0 p-4 hover:bg-gray-50 transition-colors">
       {/* Mobile Card Layout */}
       <div className="flex flex-col gap-3 md:hidden">
-        {/* Header: Platform + Status */}
+        {/* Header: Platform + Status + Rank + Level */}
         <div className="flex items-center justify-between">
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 uppercase">
-            {row.platform}
-          </span>
+          <div className="flex items-center gap-2 flex-wrap">
+            {row.rankingPage != null && (
+              <span
+                className={`inline-flex rounded px-2 py-0.5 text-xs font-medium ${
+                  row.rankingPage <= 2 ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-700'
+                }`}
+              >
+                Page {row.rankingPage}
+              </span>
+            )}
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 uppercase">
+              {row.platform}
+            </span>
+            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getAccountLevelStyle(row.accountLevel)}`}>
+              {formatAccountLevel(row.accountLevel)}
+            </span>
+          </div>
           <StatusBadge status={row.status} />
         </div>
 
@@ -85,7 +102,20 @@ const AccountCard = memo(({ row }: { row: AccountRow }) => {
       </div>
 
       {/* Desktop Table Row (hidden on mobile) */}
-      <div className="hidden md:grid md:grid-cols-8 md:gap-4 md:items-center">
+      <div className="hidden md:grid md:grid-cols-10 md:gap-4 md:items-center">
+        <div>
+          {row.rankingPage != null ? (
+            <span
+              className={`inline-flex rounded px-2 py-0.5 text-xs font-medium ${
+                row.rankingPage <= 2 ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-700'
+              }`}
+            >
+              Page {row.rankingPage}
+            </span>
+          ) : (
+            <span className="text-gray-400">—</span>
+          )}
+        </div>
         <div className="uppercase text-sm font-medium text-gray-900">
           {row.platform}
         </div>
@@ -100,6 +130,11 @@ const AccountCard = memo(({ row }: { row: AccountRow }) => {
         </div>
         <div className="text-gray-600 text-sm truncate">{row.email}</div>
         <div className="text-gray-600 text-sm">{row.typeOfGigs}</div>
+        <div>
+          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getAccountLevelStyle(row.accountLevel)}`}>
+            {formatAccountLevel(row.accountLevel)}
+          </span>
+        </div>
         <div>
           <StatusBadge status={row.status} />
         </div>
@@ -162,11 +197,13 @@ export function AccountsTable({ rows }: AccountsTableProps) {
       {/* Desktop: Table View */}
       <div className="hidden md:block rounded-lg border border-gray-200 overflow-hidden bg-white">
         {/* Table Header */}
-        <div className="grid grid-cols-8 gap-4 p-3 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-700">
+        <div className="grid grid-cols-10 gap-4 p-3 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-700">
+          <div>Rank</div>
           <div>Platform</div>
           <div>Username</div>
           <div>Email</div>
           <div>Type of gigs</div>
+          <div>Level</div>
           <div>Status</div>
           <div className="text-right">Gigs</div>
           <div className="text-right">Reports</div>

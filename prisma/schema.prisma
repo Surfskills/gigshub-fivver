@@ -19,6 +19,14 @@ enum AccountStatus {
   risk
 }
 
+enum AccountLevel {
+  starter
+  level1
+  level2
+  proRated
+  fivverVetted
+}
+
 enum GigStatus {
   active
   paused
@@ -57,6 +65,7 @@ model Account {
   typeOfGigs    String        // e.g., "API Development, MVP Building"
   currency      String        @default("USD")
   status        AccountStatus @default(active)
+  accountLevel  AccountLevel  @default(starter)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   

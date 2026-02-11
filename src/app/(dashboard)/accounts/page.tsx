@@ -1,6 +1,7 @@
+import React from "react"; // Ensure React is imported
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { db } from '@/lib/db';
+import { getAccountsRankedByPage } from '@/lib/queries/accounts';
 import { ExportButton } from '@/components/export-button';
 import { AccountsTable } from '@/components/tables/accounts-table';
 
@@ -117,19 +118,7 @@ function EmptyState() {
 }
 
 export default async function AccountsPage() {
-  const accounts = await db.account.findMany({
-    include: {
-      _count: {
-        select: {
-          gigs: true,
-          shiftReports: true,
-        },
-      },
-    },
-    orderBy: {
-      platform: 'asc',
-    },
-  });
+  const accounts = await getAccountsRankedByPage();
 
   const accountsData = accounts.map((account) => ({
     id: account.id,
@@ -138,8 +127,10 @@ export default async function AccountsPage() {
     email: account.email,
     typeOfGigs: account.typeOfGigs,
     status: account.status,
+    accountLevel: account.accountLevel,
     gigsCount: account._count.gigs,
     reportsCount: account._count.shiftReports,
+    rankingPage: account.shiftReports[0]?.rankingPage ?? null,
   }));
 
   return (
@@ -156,7 +147,7 @@ export default async function AccountsPage() {
                 Accounts
               </h1>
               <p className="mt-1 text-sm text-gray-600 sm:mt-2 sm:text-base">
-                Manage your freelancing platform accounts
+                Sorted by page rank (best first). Manage your freelancing platform accounts.
               </p>
               
               {/* Mobile stats summary */}

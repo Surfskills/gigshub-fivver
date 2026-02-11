@@ -2,6 +2,8 @@ import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 import { getMissingReportsToday } from '@/lib/queries/reports';
 import { getDashboardStats, getMonthlyTrends, getITSupportAnalystLeaderboard } from '@/lib/queries/dashboard';
+import { getTopPerformingAccounts } from '@/lib/queries/accounts';
+import { TopPerformingAccountsCard } from '@/components/dashboard/top-performing-accounts-card';
 import { AlertButton } from '@/components/alert-button';
 import { AccountHealthCard } from '@/components/dashboard/account-health-card';
 import { MissingReportsCard } from '@/components/dashboard/missing-reports-card';
@@ -86,18 +88,51 @@ function getPlatformIcon(platform: string): React.ReactNode {
 }
 
 export default async function DashboardPage() {
-  const [missingReports, stats, monthlyTrends, leaderboard] = await Promise.all([
-    getMissingReportsToday(),
-    getDashboardStats(),
-    getMonthlyTrends(12),
-    getITSupportAnalystLeaderboard(),
-  ]);
+  let missingReports: Awaited<ReturnType<typeof getMissingReportsToday>> = [];
+  let stats: Awaited<ReturnType<typeof getDashboardStats>>;
+  let monthlyTrends: Awaited<ReturnType<typeof getMonthlyTrends>>;
+  let leaderboard: Awaited<ReturnType<typeof getITSupportAnalystLeaderboard>>;
+  let loadError: string | null = null;
+
+  let topAccounts: Awaited<ReturnType<typeof getTopPerformingAccounts>> = [];
+  try {
+    const [missing, s, trends, lb, top] = await Promise.all([
+      getMissingReportsToday(),
+      getDashboardStats(),
+      getMonthlyTrends(12),
+      getITSupportAnalystLeaderboard(),
+      getTopPerformingAccounts(),
+    ]);
+    missingReports = missing;
+    stats = s;
+    monthlyTrends = trends;
+    leaderboard = lb;
+    topAccounts = top;
+  } catch (err) {
+    loadError = err instanceof Error ? err.message : 'Failed to load dashboard data';
+    stats = {
+      totalGigs: 0,
+      totalReports: 0,
+      accountsByPlatform: [],
+      totalAvailableEarnings: 0,
+      totalPendingEarnings: 0,
+    };
+    monthlyTrends = [];
+    leaderboard = [];
+  }
 
   const hasMissingReports = missingReports.length > 0;
   const totalAccounts = stats.accountsByPlatform.reduce((sum, p) => sum + p.count, 0);
 
   return (
     <div className="space-y-6 sm:space-y-8">
+      {loadError && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-800">
+          <p className="font-medium">Could not load dashboard data</p>
+          <p className="mt-1 text-sm">{loadError}</p>
+          <p className="mt-2 text-sm">Check your database connection and .env (DATABASE_URL).</p>
+        </div>
+      )}
       {/* Header Section - Mobile Optimized */}
       <header>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -239,6 +274,14 @@ export default async function DashboardPage() {
             ))}
           </div>
         </Suspense>
+      </section>
+
+      {/* Top Performing Accounts */}
+      <section aria-labelledby="top-accounts-title">
+        <h2 id="top-accounts-title" className="mb-3 text-base font-semibold text-gray-900 sm:mb-4 sm:text-lg">
+          Top Performing Accounts
+        </h2>
+        <TopPerformingAccountsCard accounts={topAccounts} />
       </section>
 
       {/* Monthly Trends Chart */}

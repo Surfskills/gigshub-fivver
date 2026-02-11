@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import { createAccount } from '@/lib/actions/accounts';
 import { AccountForm } from '@/components/forms/account-form';
-import { Platform } from '@prisma/client';
+import { AccountLevel, Platform } from '@prisma/client';
 
 // Form loading skeleton
 function FormSkeleton() {
@@ -32,6 +32,7 @@ export default function NewAccountPage() {
     const username = (formData.get('username') as string) ?? '';
     const typeOfGigs = (formData.get('typeOfGigs') as string) ?? '';
     const currency = (formData.get('currency') as string) ?? 'USD';
+    const accountLevel = (formData.get('accountLevel') as AccountLevel) ?? 'starter';
 
     const result = await createAccount({
       platform,
@@ -39,6 +40,7 @@ export default function NewAccountPage() {
       username,
       typeOfGigs,
       currency,
+      accountLevel,
     });
 
     if (result.success) {

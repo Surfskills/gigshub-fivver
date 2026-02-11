@@ -3,6 +3,7 @@
 import { db } from '@/lib/db';
 import { requireUser } from '@/lib/auth';
 import { format } from 'date-fns';
+import { formatAccountLevel } from '@/lib/account-level';
 
 export async function exportReportsToCSV(startDate: string, endDate: string) {
   await requireUser();
@@ -88,6 +89,7 @@ export async function exportAccountsToCSV() {
     Username: account.username,
     Email: account.email,
     'Type of Gigs': account.typeOfGigs,
+    'Account Level': formatAccountLevel(account.accountLevel),
     Currency: account.currency,
     Status: account.status,
     'Active Gigs': account.gigs.filter((g) => g.status === 'active').length,

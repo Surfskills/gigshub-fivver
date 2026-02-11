@@ -26,7 +26,9 @@ export const NavLink = memo(function NavLink({
   const isActive =
     href === '/'
       ? pathname === '/'
-      : pathname === href || (href !== '/' && pathname.startsWith(href + '/'));
+      : href === '/reports'
+        ? pathname === '/reports'
+        : pathname === href || (href !== '/' && pathname.startsWith(href + '/'));
 
   const baseStyles = `
     relative flex items-center justify-center gap-2
@@ -350,7 +352,9 @@ export const TabsNav = memo(function TabsNav({
           const isActive =
             link.href === '/'
               ? pathname === '/'
-              : pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href + '/'));
+              : link.href === '/reports'
+                ? pathname === '/reports'
+                : pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href + '/'));
 
           return (
             <Link

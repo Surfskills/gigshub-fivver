@@ -1,3 +1,4 @@
+import React from "react"; // Ensure React is imported
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 import { db } from '@/lib/db';
