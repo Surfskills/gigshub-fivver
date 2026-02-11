@@ -3,6 +3,9 @@ import { notFound } from 'next/navigation';
 import { getAccountById } from '@/lib/queries/accounts';
 import { createGig } from '@/lib/actions/gigs';
 import { GigForm } from '@/components/forms/gig-form';
+import { GigRatingEdit } from '@/components/gig-rating-edit';
+import { AccountReportsSection } from '@/components/account-reports-section';
+import { reportsHistoryUrl } from '@/lib/urls';
 
 interface AccountDetailPageProps {
   params: {
@@ -23,12 +26,16 @@ export default async function AccountDetailPage({ params }: AccountDetailPagePro
     const name = (formData.get('name') as string) ?? '';
     const type = (formData.get('type') as string) ?? '';
     const rated = formData.get('rated') === 'true';
+    const lastRatedDate = formData.get('lastRatedDate') as string | null;
+    const nextPossibleRateDate = formData.get('nextPossibleRateDate') as string | null;
 
     await createGig({
       accountId: params.id,
       name,
       type,
       rated,
+      lastRatedDate: rated && lastRatedDate ? lastRatedDate : undefined,
+      nextPossibleRateDate: rated && nextPossibleRateDate ? nextPossibleRateDate : undefined,
     });
   }
 
@@ -41,9 +48,36 @@ export default async function AccountDetailPage({ params }: AccountDetailPagePro
           </h1>
           <p className="text-gray-600">{account.email}</p>
         </div>
-        <Link href={`/accounts/${account.id}/edit`} className="rounded border px-4 py-2 text-sm hover:bg-gray-50">
-          Edit Account
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href={reportsHistoryUrl(account.id)}
+            prefetch
+            className="rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-all duration-150 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-[0.98]"
+          >
+            View Reports
+          </Link>
+          <Link
+            href={`/reports?accountId=${account.id}`}
+            prefetch
+            className="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-all duration-150 hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 active:scale-[0.98]"
+          >
+            Submit Report
+          </Link>
+          <Link
+            href={`/analytics?accountId=${account.id}`}
+            prefetch
+            className="rounded border border-gray-300 px-4 py-2 text-sm font-medium transition-all duration-150 hover:bg-gray-50 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 active:scale-[0.98]"
+          >
+            Analytics
+          </Link>
+          <Link
+            href={`/accounts/${account.id}/edit`}
+            prefetch
+            className="rounded border px-4 py-2 text-sm font-medium transition-all duration-150 hover:bg-gray-50 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 active:scale-[0.98]"
+          >
+            Edit Account
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -61,18 +95,14 @@ export default async function AccountDetailPage({ params }: AccountDetailPagePro
         </div>
       </div>
 
+      <AccountReportsSection accountId={account.id} reports={account.shiftReports} />
+
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-3 rounded-lg border bg-white p-6">
           <h2 className="text-lg font-semibold">Gigs</h2>
           {account.gigs.length === 0 && <p className="text-sm text-gray-500">No gigs yet.</p>}
           {account.gigs.map((gig) => (
-            <div key={gig.id} className="rounded border p-3">
-              <div className="flex items-center justify-between">
-                <div className="font-medium">{gig.name}</div>
-                <span className="text-xs uppercase text-gray-500">{gig.status}</span>
-              </div>
-              <div className="text-sm text-gray-600">{gig.type}</div>
-            </div>
+            <GigRatingEdit key={gig.id} gig={gig} />
           ))}
         </div>
 

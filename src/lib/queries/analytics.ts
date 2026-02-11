@@ -1,6 +1,78 @@
 import { db } from '@/lib/db';
 import { subDays, startOfDay, format } from 'date-fns';
 
+/** Returns trend data for Money, Rating, Ranking charts. Optional accountId filter. */
+export async function getMetricTrends(days: number, accountId?: string) {
+  const startDate = startOfDay(subDays(new Date(), days));
+
+  const reports = await db.shiftReport.findMany({
+    where: {
+      ...(accountId ? { accountId } : {}),
+      reportDate: { gte: startDate },
+    },
+    include: {
+      account: {
+        select: { username: true, platform: true },
+      },
+    },
+    orderBy: [{ reportDate: 'asc' }, { shift: 'asc' }],
+  });
+
+  const dateMap = new Map<
+    string,
+    {
+      date: string;
+      availableBalance: number;
+      pendingBalance: number;
+      totalMoney: number;
+      ratingSum: number;
+      ratingCount: number;
+      rankingSum: number;
+      rankingCount: number;
+    }
+  >();
+
+  reports.forEach((report) => {
+    const dateKey = format(report.reportDate, 'yyyy-MM-dd');
+    const existing = dateMap.get(dateKey) || {
+      date: dateKey,
+      availableBalance: 0,
+      pendingBalance: 0,
+      totalMoney: 0,
+      ratingSum: 0,
+      ratingCount: 0,
+      rankingSum: 0,
+      rankingCount: 0,
+    };
+
+    const avail = Number(report.availableBalance);
+    const pend = Number(report.pendingBalance);
+    existing.availableBalance += avail;
+    existing.pendingBalance += pend;
+    existing.totalMoney += avail + pend;
+
+    if (report.rating != null) {
+      existing.ratingSum += Number(report.rating);
+      existing.ratingCount += 1;
+    }
+    if (report.rankingPage != null) {
+      existing.rankingSum += report.rankingPage;
+      existing.rankingCount += 1;
+    }
+
+    dateMap.set(dateKey, existing);
+  });
+
+  return Array.from(dateMap.values()).map((d) => ({
+    date: d.date,
+    money: d.totalMoney,
+    availableBalance: d.availableBalance,
+    pendingBalance: d.pendingBalance,
+    rating: d.ratingCount > 0 ? Math.round((d.ratingSum / d.ratingCount) * 100) / 100 : null,
+    ranking: d.rankingCount > 0 ? Math.round(d.rankingSum / d.rankingCount) : null,
+  }));
+}
+
 export async function getBalanceTrends(days = 14) {
   const startDate = startOfDay(subDays(new Date(), days));
 

@@ -11,16 +11,6 @@ exports.id = "vendor-chunks/dot-case";
 exports.ids = ["vendor-chunks/dot-case"];
 exports.modules = {
 
-/***/ "(action-browser)/./node_modules/dot-case/dist.es2015/index.js":
-/*!****************************************************!*\
-  !*** ./node_modules/dot-case/dist.es2015/index.js ***!
-  \****************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   dotCase: () => (/* binding */ dotCase)\n/* harmony export */ });\n/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! tslib */ \"(action-browser)/./node_modules/tslib/tslib.es6.mjs\");\n/* harmony import */ var no_case__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! no-case */ \"(action-browser)/./node_modules/no-case/dist.es2015/index.js\");\n\n\nfunction dotCase(input, options) {\n    if (options === void 0) {\n        options = {};\n    }\n    return (0,no_case__WEBPACK_IMPORTED_MODULE_0__.noCase)(input, (0,tslib__WEBPACK_IMPORTED_MODULE_1__.__assign)({\n        delimiter: \".\"\n    }, options));\n} //# sourceMappingURL=index.js.map\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKGFjdGlvbi1icm93c2VyKS8uL25vZGVfbW9kdWxlcy9kb3QtY2FzZS9kaXN0LmVzMjAxNS9pbmRleC5qcyIsIm1hcHBpbmdzIjoiOzs7Ozs7QUFBaUM7QUFDQTtBQUMxQixTQUFTRSxRQUFRQyxLQUFLLEVBQUVDLE9BQU87SUFDbEMsSUFBSUEsWUFBWSxLQUFLLEdBQUc7UUFBRUEsVUFBVSxDQUFDO0lBQUc7SUFDeEMsT0FBT0gsK0NBQU1BLENBQUNFLE9BQU9ILCtDQUFRQSxDQUFDO1FBQUVLLFdBQVc7SUFBSSxHQUFHRDtBQUN0RCxFQUNBLGlDQUFpQyIsInNvdXJjZXMiOlsid2VicGFjazovL2ZyZWVsYW5jZS1vcHMtYnJhaW4vLi9ub2RlX21vZHVsZXMvZG90LWNhc2UvZGlzdC5lczIwMTUvaW5kZXguanM/NmU0MiJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBfX2Fzc2lnbiB9IGZyb20gXCJ0c2xpYlwiO1xuaW1wb3J0IHsgbm9DYXNlIH0gZnJvbSBcIm5vLWNhc2VcIjtcbmV4cG9ydCBmdW5jdGlvbiBkb3RDYXNlKGlucHV0LCBvcHRpb25zKSB7XG4gICAgaWYgKG9wdGlvbnMgPT09IHZvaWQgMCkgeyBvcHRpb25zID0ge307IH1cbiAgICByZXR1cm4gbm9DYXNlKGlucHV0LCBfX2Fzc2lnbih7IGRlbGltaXRlcjogXCIuXCIgfSwgb3B0aW9ucykpO1xufVxuLy8jIHNvdXJjZU1hcHBpbmdVUkw9aW5kZXguanMubWFwIl0sIm5hbWVzIjpbIl9fYXNzaWduIiwibm9DYXNlIiwiZG90Q2FzZSIsImlucHV0Iiwib3B0aW9ucyIsImRlbGltaXRlciJdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///(action-browser)/./node_modules/dot-case/dist.es2015/index.js\n");
-
-/***/ }),
-
 /***/ "(rsc)/./node_modules/dot-case/dist.es2015/index.js":
 /*!****************************************************!*\
   !*** ./node_modules/dot-case/dist.es2015/index.js ***!

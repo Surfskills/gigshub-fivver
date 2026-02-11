@@ -68,16 +68,18 @@ model Account {
 }
 
 model Gig {
-  id            String      @id @default(cuid())
-  accountId     String
-  name          String
-  type          String      // API, MVP, CICD, etc.
-  rated         Boolean     @default(false)
-  status        GigStatus   @default(active)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id                   String      @id @default(cuid())
+  accountId            String
+  name                 String
+  type                 String      // API, MVP, CICD, etc.
+  rated                Boolean     @default(false)
+  lastRatedDate        DateTime?   @db.Date   // when gig was last rated
+  nextPossibleRateDate DateTime?   @db.Date   // next date it can be rated (interval)
+  status               GigStatus   @default(active)
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
   
-  account       Account     @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  account              Account     @relation(fields: [accountId], references: [id], onDelete: Cascade)
   
   @@index([accountId])
   @@index([status])
@@ -96,6 +98,11 @@ model ShiftReport {
   pendingBalance    Decimal   @db.Decimal(10, 2)
   rankingPage       Int?      // nullable if not applicable
   notes             String?   @db.Text
+
+  // Handover
+  accountsCreated   Json?     // [{ email: string, type: "seller" | "buyer" }]
+  rating            Decimal?  @db.Decimal(3, 2)  // e.g. 4.85
+  ordersInProgress  Json?     // [{ account: string, deadline: string (ISO), handlerPhone: string }]
   
   // Audit
   reportedByUserId  String

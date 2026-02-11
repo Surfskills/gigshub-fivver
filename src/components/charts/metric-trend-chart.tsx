@@ -1,0 +1,226 @@
+'use client';
+
+import { memo, useMemo } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
+interface DataPoint {
+  date: string;
+  [key: string]: string | number | null | undefined;
+}
+
+type ValueFormat = 'currency' | 'number';
+
+type ChartVariant = 'money' | 'rating' | 'ranking';
+
+interface MetricTrendChartProps {
+  title: string;
+  data: DataPoint[];
+  dataKeys: { key: string; color: string; name: string }[];
+  valueFormat?: ValueFormat;
+  variant?: ChartVariant;
+}
+
+// Memoized formatters (created once)
+const formatValue = (value: number, format?: ValueFormat): string => {
+  if (format === 'currency') return `$${Number(value).toFixed(2)}`;
+  return String(value);
+};
+
+const formatXAxisDate = (value: string): string => {
+  const d = new Date(value);
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${months[d.getMonth()]} ${d.getDate()}`;
+};
+
+// Mobile-friendly short date format
+const formatXAxisDateMobile = (value: string): string => {
+  const d = new Date(value);
+  return `${d.getMonth() + 1}/${d.getDate()}`;
+};
+
+// Fixed Record type syntax
+const variantConfig: Record<ChartVariant, { 
+  domain: [number, number]; 
+  reversed: boolean; 
+  valueFormat?: ValueFormat;
+}> = {
+  money: { domain: [0, 700], reversed: false, valueFormat: 'currency' },
+  rating: { domain: [0, 5], reversed: true, valueFormat: 'number' },
+  ranking: { domain: [1, 20], reversed: true, valueFormat: 'number' },
+};
+
+// Memoized custom tooltip
+const CustomTooltip = memo(({ active, payload, label, valueFormat }: any) => {
+  if (!active || !payload || !payload.length) return null;
+
+  return (
+    <div className="bg-white p-2 sm:p-3 rounded-md shadow-lg border border-gray-200 text-xs sm:text-sm">
+      <p className="font-medium text-gray-700 mb-1 text-[10px] sm:text-xs">{label}</p>
+      {payload.map((entry: any, index: number) => (
+        <p key={index} style={{ color: entry.color }} className="font-semibold text-[11px] sm:text-xs">
+          {entry.name}: {formatValue(entry.value, valueFormat)}
+        </p>
+      ))}
+    </div>
+  );
+});
+CustomTooltip.displayName = 'CustomTooltip';
+
+// Memoized empty state component
+const EmptyState = memo(({ title }: { title: string }) => (
+  <div className="rounded-lg border bg-white p-3 sm:p-4 md:p-6">
+    <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">{title}</h3>
+    <div className="flex h-[200px] sm:h-[250px] md:h-[280px] items-center justify-center text-gray-500 text-xs sm:text-sm">
+      No data for this period
+    </div>
+  </div>
+));
+EmptyState.displayName = 'EmptyState';
+
+// Memoized legend component for mobile
+const MobileLegend = memo(({ dataKeys }: { dataKeys: { key: string; color: string; name: string }[] }) => (
+  <div className="flex flex-wrap gap-3 mt-3 sm:hidden" role="img" aria-label="Chart legend">
+    {dataKeys.map(({ key, color, name }) => (
+      <div key={key} className="flex items-center gap-1.5">
+        <div className="w-3 h-0.5 rounded-full" style={{ backgroundColor: color }} aria-hidden="true"></div>
+        <span className="text-gray-600 text-[11px]">{name}</span>
+      </div>
+    ))}
+  </div>
+));
+MobileLegend.displayName = 'MobileLegend';
+
+export const MetricTrendChart = memo(({
+  title,
+  data,
+  dataKeys,
+  valueFormat,
+  variant = 'money',
+}: MetricTrendChartProps) => {
+  // Memoize config and format
+  const config = useMemo(() => variantConfig[variant], [variant]);
+  const fmt = useMemo(() => valueFormat ?? config.valueFormat, [valueFormat, config.valueFormat]);
+  
+  // Memoize hasData check
+  const hasData = useMemo(
+    () => data.some((d) => dataKeys.some(({ key }) => d[key] != null)),
+    [data, dataKeys]
+  );
+
+  // Memoize processed data (sample on mobile)
+  const chartData = useMemo(() => {
+    if (!hasData || data.length === 0) return [];
+    
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+    if (isMobile && data.length > 12) {
+      const step = Math.ceil(data.length / 12);
+      return data.filter((_, index) => index % step === 0);
+    }
+    return data;
+  }, [data, hasData]);
+
+  // Memoize Y-axis formatter
+  const yAxisFormatter = useMemo(
+    () => (v: number) => {
+      if (fmt === 'currency' && v >= 1000) {
+        return `$${(v / 1000).toFixed(1)}k`;
+      }
+      return formatValue(v, fmt);
+    },
+    [fmt]
+  );
+
+  // Early return for empty state
+  if (!hasData || data.length === 0) {
+    return <EmptyState title={title} />;
+  }
+
+  return (
+    <div className="rounded-lg border bg-white p-3 sm:p-4 md:p-6">
+      <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 truncate">
+        {title}
+      </h3>
+      
+      <div className="w-full overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">
+        <ResponsiveContainer 
+          width="100%" 
+          height={220}
+          className="sm:!h-[280px] md:!h-[320px]"
+          debounce={100}
+        >
+          <LineChart 
+            data={chartData}
+            margin={{ top: 5, right: 5, left: -15, bottom: 5 }}
+          >
+            <CartesianGrid 
+              strokeDasharray="3 3" 
+              stroke="#e5e7eb" 
+              vertical={false}
+              className="opacity-60 sm:opacity-100"
+            />
+            
+            <XAxis
+              dataKey="date"
+              tick={{ fontSize: 10 }}
+              tickFormatter={(value) => {
+                // Use mobile format on small screens
+                if (typeof window !== 'undefined' && window.innerWidth < 640) {
+                  return formatXAxisDateMobile(value);
+                }
+                return formatXAxisDate(value);
+              }}
+              angle={-35}
+              textAnchor="end"
+              height={50}
+              interval="preserveStartEnd"
+              minTickGap={15}
+            />
+            
+            <YAxis
+              domain={config.domain}
+              reversed={config.reversed}
+              tick={{ fontSize: 10 }}
+              width={45}
+              tickFormatter={yAxisFormatter}
+            />
+            
+            <Tooltip
+              content={<CustomTooltip valueFormat={fmt} />}
+              isAnimationActive={false}
+              cursor={{ stroke: '#e5e7eb', strokeWidth: 1 }}
+            />
+            
+            <Legend 
+              wrapperStyle={{
+                fontSize: '10px',
+                paddingTop: '8px'
+              }}
+              iconSize={8}
+              className="hidden sm:block"
+            />
+            
+            {dataKeys.map(({ key, color, name }) => (
+              <Line
+                key={key}
+                type="monotone"
+                dataKey={key}
+                stroke={color}
+                strokeWidth={2}
+                name={name}
+                dot={false}
+                activeDot={{ r: 4, strokeWidth: 0 }}
+                connectNulls
+                isAnimationActive={false}
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      
+      {/* Mobile legend */}
+      <MobileLegend dataKeys={dataKeys} />
+    </div>
+  );
+});
+
+MetricTrendChart.displayName = 'MetricTrendChart';

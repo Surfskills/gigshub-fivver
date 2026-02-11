@@ -149,7 +149,7 @@ Choose one:
 Edit `src/lib/email/send.ts`:
 
 ```typescript
-from: 'Ops Brain <alerts@yourdomain.com>', // Change to your domain
+from: 'Gigs-Hub (Fivver)<alerts@yourdomain.com>', // Change to your domain
 ```
 
 ---

@@ -10,6 +10,8 @@ export async function createGig(data: {
   name: string;
   type: string;
   rated?: boolean;
+  lastRatedDate?: string;
+  nextPossibleRateDate?: string;
 }) {
   await requireAdmin();
 
@@ -20,6 +22,8 @@ export async function createGig(data: {
         name: data.name,
         type: data.type,
         rated: data.rated || false,
+        lastRatedDate: data.lastRatedDate ? new Date(data.lastRatedDate) : undefined,
+        nextPossibleRateDate: data.nextPossibleRateDate ? new Date(data.nextPossibleRateDate) : undefined,
       },
     });
 
@@ -36,15 +40,26 @@ export async function updateGig(
     name?: string;
     type?: string;
     rated?: boolean;
+    lastRatedDate?: string | null;
+    nextPossibleRateDate?: string | null;
     status?: GigStatus;
   }
 ) {
   await requireAdmin();
 
   try {
+    const { lastRatedDate, nextPossibleRateDate, ...rest } = data;
     const gig = await db.gig.update({
       where: { id: gigId },
-      data,
+      data: {
+        ...rest,
+        ...(lastRatedDate !== undefined && {
+          lastRatedDate: lastRatedDate ? new Date(lastRatedDate) : null,
+        }),
+        ...(nextPossibleRateDate !== undefined && {
+          nextPossibleRateDate: nextPossibleRateDate ? new Date(nextPossibleRateDate) : null,
+        }),
+      },
     });
 
     revalidatePath(`/accounts/${gig.accountId}`);

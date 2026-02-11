@@ -14,7 +14,7 @@ export async function sendMissingReportsAlert(
 ) {
   try {
     const { data, error } = await resend.emails.send({
-      from: 'Ops Brain <alerts@yourdomain.com>',
+      from: 'Gigs-Hub (Fivver)<alerts@yourdomain.com>',
       to,
       subject: `⚠️ Missing Shift Reports - ${date}`,
       react: MissingReportsEmail({ missingReports, date }),

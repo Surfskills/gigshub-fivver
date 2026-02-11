@@ -15,11 +15,13 @@ export async function getCurrentUser() {
   });
 
   if (!user) {
+    const isFirstUser = (await db.user.count()) === 0;
     user = await db.user.create({
       data: {
         clerkId: userId,
         email: clerkUser.emailAddresses[0].emailAddress,
         name: `${clerkUser.firstName} ${clerkUser.lastName}`.trim(),
+        role: isFirstUser ? UserRole.admin : UserRole.operator,
       },
     });
   }

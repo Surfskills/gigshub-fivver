@@ -32,6 +32,17 @@ export async function exportReportsToCSV(startDate: string, endDate: string) {
     orderBy: [{ reportDate: 'desc' }, { shift: 'asc' }],
   });
 
+  type AccountCreated = { email: string; type: 'seller' | 'buyer' };
+  type OrderInProgress = { account: string; deadline: string; handlerPhone: string };
+  const formatAccountsCreated = (accounts: AccountCreated[] | null | undefined): string => {
+    if (!accounts || accounts.length === 0) return '';
+    return accounts.map((a) => `${a.email} (${a.type})`).join('; ');
+  };
+  const formatOrdersInProgress = (orders: OrderInProgress[] | null | undefined): string => {
+    if (!orders || orders.length === 0) return '';
+    return orders.map((o) => `${o.account} (${o.deadline}, ${o.handlerPhone})`).join('; ');
+  };
+
   const csvData = reports.map((report) => ({
     Date: format(report.reportDate, 'yyyy-MM-dd'),
     Shift: report.shift,
@@ -43,6 +54,9 @@ export async function exportReportsToCSV(startDate: string, endDate: string) {
     'Available Balance': Number(report.availableBalance).toFixed(2),
     'Pending Balance': Number(report.pendingBalance).toFixed(2),
     'Ranking Page': report.rankingPage || '',
+    Rating: report.rating != null ? Number(report.rating) : '',
+    'Accounts Created': formatAccountsCreated(report.accountsCreated as AccountCreated[] | null),
+    'Orders in Progress': formatOrdersInProgress(report.ordersInProgress as OrderInProgress[] | null),
     Notes: report.notes || '',
     'Reported By': report.reportedBy.name,
     'Reporter Email': report.reportedBy.email,
