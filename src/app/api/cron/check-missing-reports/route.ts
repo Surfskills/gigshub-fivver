@@ -1,8 +1,4 @@
 import { NextResponse } from 'next/server';
-import { getMissingReportsToday } from '@/lib/queries/reports';
-import { sendMissingReportsAlert } from '@/lib/email/send';
-import { db } from '@/lib/db';
-import { format } from 'date-fns';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -12,6 +8,11 @@ export async function GET(request: Request) {
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const { getMissingReportsToday } = await import('@/lib/queries/reports');
+  const { sendMissingReportsAlert } = await import('@/lib/email/send');
+  const { db } = await import('@/lib/db');
+  const { format } = await import('date-fns');
 
   const missingReports = await getMissingReportsToday();
 
