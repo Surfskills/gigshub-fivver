@@ -5,6 +5,18 @@ import { getAccountById } from '@/lib/queries/accounts';
 import { updateAccount } from '@/lib/actions/accounts';
 import { AccountForm } from '@/components/forms/account-form';
 
+export const dynamic = 'force-dynamic';
+
+// Prevent static generation - all paths are dynamic
+export async function generateStaticParams() {
+  return [];
+}
+
+export const metadata = {
+  title: 'Edit Account',
+  description: 'Edit account details',
+};
+
 interface EditAccountPageProps {
   params: {
     id: string;
@@ -109,20 +121,4 @@ function FormSkeleton() {
       <div className="h-10 w-full bg-gray-300 rounded-md sm:h-11 sm:w-32" />
     </div>
   );
-}
-
-// Metadata for SEO (add to your page)
-export async function generateMetadata({ params }: EditAccountPageProps) {
-  const account = await getAccountById(params.id);
-  
-  if (!account) {
-    return {
-      title: 'Account Not Found',
-    };
-  }
-
-  return {
-    title: `Edit ${account.platform} Account - ${account.username}`,
-    description: `Edit account details for ${account.username} on ${account.platform}`,
-  };
 }
