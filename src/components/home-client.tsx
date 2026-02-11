@@ -165,7 +165,7 @@ export default function HomePageClient() {
                 </p>
                 <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6 text-sm">
                   <div className="flex items-center gap-2">
-                    <span className="text-[var(--text-muted)]">Powered by</span>
+                    <span className="text-[var(--text-muted)]">Managed by</span>
                     <a 
                       href="https://fred-iota.vercel.app" 
                       target="_blank" 
