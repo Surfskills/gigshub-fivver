@@ -18,9 +18,9 @@ const clerkHandler = clerkMiddleware(async (auth, req) => {
 });
 
 export default async function middleware(req: NextRequest, event: NextFetchEvent) {
-  // Bypass Clerk for static assets and root
+  // Bypass Clerk only for static files (Clerk auth() requires middleware to run for pages)
   const path = req.nextUrl.pathname;
-  if (path === '/' || path === '/manifest.json' || path === '/vercel.ico') {
+  if (path === '/manifest.json' || path === '/vercel.ico') {
     return NextResponse.next();
   }
   return clerkHandler(req, event);
