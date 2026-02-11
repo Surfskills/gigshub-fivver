@@ -139,19 +139,19 @@ const AccountCard = memo(({ row }: { row: AccountRow }) => {
           <StatusBadge status={row.status} />
         </div>
         <div className="text-right font-medium pr-4">{row.gigsCount}</div>
-        <div className="text-right font-medium pr-6 min-w-[2.5rem]">{row.reportsCount}</div>
-        <div className="flex gap-5 justify-end pl-6 min-w-[8rem]">
+        <div className="text-right font-medium pr-4">{row.reportsCount}</div>
+        <div className="flex gap-4 justify-end items-center">
           <Link
             href={reportsHistoryUrl(row.id)}
             prefetch={false}
-            className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors py-1.5 px-2 rounded hover:bg-blue-50"
+            className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors py-1.5 px-2 rounded hover:bg-blue-50 whitespace-nowrap"
           >
             Reports
           </Link>
           <Link
             href={`/reports?accountId=${row.id}`}
             prefetch={false}
-            className="text-sm font-medium text-emerald-600 hover:text-emerald-800 transition-colors py-1.5 px-2 rounded hover:bg-emerald-50"
+            className="text-sm font-medium text-emerald-600 hover:text-emerald-800 transition-colors py-1.5 px-2 rounded hover:bg-emerald-50 whitespace-nowrap"
           >
             Submit
           </Link>
@@ -206,8 +206,8 @@ export function AccountsTable({ rows }: AccountsTableProps) {
           <div>Level</div>
           <div>Status</div>
           <div className="text-right pr-4">Gigs</div>
-          <div className="text-right pr-6">Reports</div>
-          <div className="text-right pl-6">Actions</div>
+          <div className="text-right pr-4">Reports</div>
+          <div className="text-right">Actions</div>
         </div>
 
         {/* Table Body */}
