@@ -37,13 +37,17 @@ const CustomTooltip = memo(({ active, payload, label }: any) => {
       <p className="font-medium text-gray-700 mb-1.5 text-[10px] sm:text-xs">
         Month: {label}
       </p>
-      {payload.map((entry: any, index: number) => (
-        <p key={index} style={{ color: entry.color }} className="font-semibold text-[11px] sm:text-xs">
-          {entry.name}: {entry.name === 'Money Earned' 
-            ? formatCurrencyFull(entry.value) 
-            : entry.value}
-        </p>
-      ))}
+      {payload
+        .filter((entry: any, i: number, arr: any[]) => 
+          arr.findIndex((e: any) => e.dataKey === entry.dataKey) === i
+        )
+        .map((entry: any, index: number) => (
+          <p key={entry.dataKey ?? index} style={{ color: entry.color }} className="font-semibold text-[11px] sm:text-xs">
+            {entry.name}: {entry.name === 'Money Earned' 
+              ? formatCurrencyFull(entry.value) 
+              : entry.value}
+          </p>
+        ))}
     </div>
   );
 });
@@ -176,6 +180,18 @@ export const MonthlyTrendsChart = memo(({ data }: MonthlyTrendsChartProps) => {
               }}
               iconSize={8}
               className="hidden sm:block"
+              content={() => (
+                <div className="flex flex-wrap justify-center gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-0.5 rounded-full bg-emerald-500" />
+                    <span className="text-gray-600 text-[11px]">Money Earned</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-0.5 rounded-full bg-blue-500" />
+                    <span className="text-gray-600 text-[11px]">Total Accounts</span>
+                  </div>
+                </div>
+              )}
             />
             
             {/* Money Earned Line */}
@@ -193,23 +209,9 @@ export const MonthlyTrendsChart = memo(({ data }: MonthlyTrendsChartProps) => {
               isAnimationActive={false}
             />
             
-            {/* Total Accounts Line - uses left axis on mobile, right on desktop */}
-            <Line
-              yAxisId="left"
-              className="sm:!hidden"
-              type="monotone"
-              dataKey="totalAccounts"
-              stroke="#3b82f6"
-              strokeWidth={2}
-              name="Total Accounts"
-              dot={false}
-              activeDot={{ r: 4, strokeWidth: 0 }}
-              connectNulls
-              isAnimationActive={false}
-            />
+            {/* Total Accounts Line - right axis on desktop, left on mobile (when right axis hidden) */}
             <Line
               yAxisId="right"
-              className="hidden sm:!block"
               type="monotone"
               dataKey="totalAccounts"
               stroke="#3b82f6"
