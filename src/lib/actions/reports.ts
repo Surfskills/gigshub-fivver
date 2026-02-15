@@ -17,9 +17,11 @@ export async function submitShiftReport(data: {
   availableBalance: number;
   pendingBalance: number;
   rankingPage?: number;
+  successRate?: number;
   notes?: string;
   accountsCreated?: AccountCreated[];
   rating?: number;
+  handedOverToUserId?: string | null;
   ordersInProgress?: OrderInProgress[];
 }) {
   const user = await requireUser();
@@ -35,7 +37,9 @@ export async function submitShiftReport(data: {
         availableBalance: data.availableBalance,
         pendingBalance: data.pendingBalance,
         rankingPage: data.rankingPage,
+        successRate: data.successRate != null ? data.successRate : undefined,
         notes: data.notes,
+        handedOverToUserId: data.handedOverToUserId || undefined,
         accountsCreated:
           data.accountsCreated && data.accountsCreated.length > 0
             ? (data.accountsCreated as Prisma.InputJsonValue)
@@ -50,6 +54,7 @@ export async function submitShiftReport(data: {
     });
 
     revalidatePath('/reports');
+    revalidatePath(`/reports/${data.accountId}`);
     revalidatePath('/');
 
     return { success: true, report };
@@ -72,9 +77,11 @@ export async function updateShiftReport(
     availableBalance?: number;
     pendingBalance?: number;
     rankingPage?: number | null;
+    successRate?: number | null;
     notes?: string | null;
     accountsCreated?: AccountCreated[] | null;
     rating?: number | null;
+    handedOverToUserId?: string | null;
     ordersInProgress?: OrderInProgress[] | null;
   }
 ) {
@@ -112,6 +119,7 @@ export async function getReportById(reportId: string) {
     include: {
       account: { select: { id: true, platform: true, username: true } },
       reportedBy: { select: { name: true } },
+      handedOverTo: { select: { id: true, name: true } },
     },
   });
 }

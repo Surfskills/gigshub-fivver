@@ -33,6 +33,10 @@ export default function NewAccountPage() {
     const typeOfGigs = (formData.get('typeOfGigs') as string) ?? '';
     const currency = (formData.get('currency') as string) ?? 'USD';
     const accountLevel = (formData.get('accountLevel') as AccountLevel) ?? 'starter';
+    const successRateVal = formData.get('successRate') as string | null;
+    const successRate = successRateVal && successRateVal.trim() ? Number(successRateVal) : undefined;
+    const browserType = (formData.get('browserType') as string)?.trim() || undefined;
+    const proxy = (formData.get('proxy') as string)?.trim() || undefined;
 
     const result = await createAccount({
       platform,
@@ -41,6 +45,9 @@ export default function NewAccountPage() {
       typeOfGigs,
       currency,
       accountLevel,
+      successRate: successRate ?? null,
+      browserType: browserType ?? null,
+      proxy: proxy ?? null,
     });
 
     if (result.success) {

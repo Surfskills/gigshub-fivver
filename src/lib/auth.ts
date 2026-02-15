@@ -15,15 +15,33 @@ export async function getCurrentUser() {
   });
 
   if (!user) {
-    const isFirstUser = (await db.user.count()) === 0;
-    user = await db.user.create({
-      data: {
-        clerkId: userId,
-        email: clerkUser.emailAddresses[0].emailAddress,
-        name: `${clerkUser.firstName} ${clerkUser.lastName}`.trim(),
-        role: isFirstUser ? UserRole.admin : UserRole.operator,
-      },
+    const email = clerkUser.emailAddresses[0]?.emailAddress;
+    if (!email) return null;
+
+    // Try to find by email (Clerk ID may have changed)
+    user = await db.user.findUnique({
+      where: { email },
     });
+
+    if (user) {
+      // Update clerkId if it changed
+      if (user.clerkId !== userId) {
+        user = await db.user.update({
+          where: { id: user.id },
+          data: { clerkId: userId },
+        });
+      }
+    } else {
+      const isFirstUser = (await db.user.count()) === 0;
+      user = await db.user.create({
+        data: {
+          clerkId: userId,
+          email,
+          name: `${clerkUser.firstName ?? ''} ${clerkUser.lastName ?? ''}`.trim() || email,
+          role: isFirstUser ? UserRole.admin : UserRole.operator,
+        },
+      });
+    }
   }
 
   return user;

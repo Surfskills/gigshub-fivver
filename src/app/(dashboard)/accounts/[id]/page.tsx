@@ -7,6 +7,7 @@ import { GigRatingEdit } from '@/components/gig-rating-edit';
 import { AccountReportsSection } from '@/components/account-reports-section';
 import { reportsHistoryUrl } from '@/lib/urls';
 import { formatAccountLevel, getAccountLevelStyle } from '@/lib/account-level';
+import { CopyableValue } from '@/components/ui/copyable-value';
 
 export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
@@ -84,7 +85,7 @@ export default async function AccountDetailPage({ params }: AccountDetailPagePro
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-4 lg:grid-cols-7">
         <div className="rounded-lg border bg-white p-4">
           <div className="text-sm text-gray-500">Level</div>
           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium mt-1 ${getAccountLevelStyle(account.accountLevel)}`}>
@@ -102,6 +103,18 @@ export default async function AccountDetailPage({ params }: AccountDetailPagePro
         <div className="rounded-lg border bg-white p-4">
           <div className="text-sm text-gray-500">Total reports</div>
           <div className="text-lg font-semibold">{account._count.shiftReports}</div>
+        </div>
+        <div className="rounded-lg border bg-white p-4">
+          <div className="text-sm text-gray-500">Success rate</div>
+          <div className="text-lg font-semibold">{account.successRate != null ? `${Number(account.successRate)}%` : '—'}</div>
+        </div>
+        <div className="rounded-lg border bg-white p-4">
+          <div className="text-sm text-gray-500">Browser</div>
+          <div className="text-lg font-semibold">{account.browserType ?? '—'}</div>
+        </div>
+        <div className="rounded-lg border bg-white p-4">
+          <div className="text-sm text-gray-500">Proxy</div>
+          <CopyableValue value={account.proxy ?? undefined} className="text-sm" />
         </div>
       </div>
 

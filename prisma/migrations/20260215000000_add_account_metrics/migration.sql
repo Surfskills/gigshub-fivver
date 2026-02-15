@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Account" ADD COLUMN IF NOT EXISTS "successRate" DECIMAL(5,2);
+ALTER TABLE "Account" ADD COLUMN IF NOT EXISTS "browserType" TEXT;
+ALTER TABLE "Account" ADD COLUMN IF NOT EXISTS "proxy" TEXT;

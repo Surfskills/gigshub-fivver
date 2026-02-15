@@ -12,6 +12,9 @@ interface AccountFormProps {
     currency?: string;
     status?: AccountStatus;
     accountLevel?: AccountLevel;
+    successRate?: number | null;
+    browserType?: string | null;
+    proxy?: string | null;
   };
   submitLabel?: string;
   isEdit?: boolean;
@@ -243,6 +246,34 @@ export const AccountForm = memo(({
                 <option value="other">Other</option>
               </select>
             </FormField>
+          </div>
+        </div>
+
+        {/* Success Rate, Browser, Proxy */}
+        <div className="mb-5 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <h4 className="text-sm font-semibold text-gray-900 mb-3">Account Metrics</h4>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <FormField
+              label="Success Rate (%)"
+              name="successRate"
+              placeholder="e.g., 85.5"
+              helpText="0-100 percentage"
+              defaultValue={defaultValues?.successRate != null ? String(defaultValues.successRate) : undefined}
+            />
+            <FormField
+              label="Browser"
+              name="browserType"
+              placeholder="e.g., Chrome, Firefox"
+              helpText="Browser used for this account"
+              defaultValue={defaultValues?.browserType ?? undefined}
+            />
+            <FormField
+              label="Proxy"
+              name="proxy"
+              placeholder="Proxy configuration"
+              helpText="Proxy used for this account"
+              defaultValue={defaultValues?.proxy ?? undefined}
+            />
           </div>
         </div>
 

@@ -2,6 +2,7 @@
 
 import { memo, useState, useCallback, useEffect } from 'react';
 import { updateGig } from '@/lib/actions/gigs';
+import { GIG_TYPES } from '@/lib/gig-types';
 
 type Gig = {
   id: string;
@@ -195,6 +196,9 @@ Checkbox.displayName = 'Checkbox';
 
 export const GigRatingEdit = memo(function GigRatingEdit({ gig }: GigRatingEditProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState(gig.name);
+  const [type, setType] = useState(gig.type);
+  const [status, setStatus] = useState(gig.status);
   const [rated, setRated] = useState(gig.rated);
   const [lastRatedDate, setLastRatedDate] = useState(toDateInputValue(gig.lastRatedDate));
   const [nextPossibleRateDate, setNextPossibleRateDate] = useState(
@@ -213,6 +217,9 @@ export const GigRatingEdit = memo(function GigRatingEdit({ gig }: GigRatingEditP
 
     try {
       const result = await updateGig(gig.id, {
+        name: name.trim(),
+        type: type.trim(),
+        status: status as 'active' | 'paused' | 'deprecated',
         rated,
         lastRatedDate: rated && lastRatedDate ? lastRatedDate : null,
         nextPossibleRateDate: rated && nextPossibleRateDate ? nextPossibleRateDate : null,
@@ -220,13 +227,13 @@ export const GigRatingEdit = memo(function GigRatingEdit({ gig }: GigRatingEditP
 
       if (result.success) {
         setNotification({
-          message: 'Gig rating updated successfully',
+          message: 'Gig updated successfully',
           type: 'success',
         });
         setIsEditing(false);
       } else {
         setNotification({
-          message: result.error || 'Failed to update gig rating',
+          message: result.error || 'Failed to update gig',
           type: 'error',
         });
       }
@@ -238,15 +245,18 @@ export const GigRatingEdit = memo(function GigRatingEdit({ gig }: GigRatingEditP
     } finally {
       setIsSubmitting(false);
     }
-  }, [gig.id, rated, lastRatedDate, nextPossibleRateDate]);
+  }, [gig.id, name, type, status, rated, lastRatedDate, nextPossibleRateDate]);
 
   const handleCancel = useCallback(() => {
     setIsEditing(false);
+    setName(gig.name);
+    setType(gig.type);
+    setStatus(gig.status);
     setRated(gig.rated);
     setLastRatedDate(toDateInputValue(gig.lastRatedDate));
     setNextPossibleRateDate(toDateInputValue(gig.nextPossibleRateDate));
     setNotification(null);
-  }, [gig.rated, gig.lastRatedDate, gig.nextPossibleRateDate]);
+  }, [gig.name, gig.type, gig.status, gig.rated, gig.lastRatedDate, gig.nextPossibleRateDate]);
 
   const closeNotification = useCallback(() => {
     setNotification(null);
@@ -282,8 +292,10 @@ export const GigRatingEdit = memo(function GigRatingEdit({ gig }: GigRatingEditP
         <div className="p-4 sm:p-3">
           {!isEditing ? (
             <div className="space-y-3">
-              {/* Rating info */}
-              {gig.rated && (gig.lastRatedDate || gig.nextPossibleRateDate) && (
+              {/* Gig info */}
+              <div className="space-y-1 text-sm text-gray-600">
+                <p><span className="font-medium text-gray-700">Type:</span> {gig.type}</p>
+                {Boolean(gig.rated && (gig.lastRatedDate || gig.nextPossibleRateDate)) && (
                 <div className="space-y-2 p-3 bg-blue-50 rounded-lg">
                   {gig.lastRatedDate && (
                     <div className="flex items-center gap-2 text-sm">
@@ -308,6 +320,8 @@ export const GigRatingEdit = memo(function GigRatingEdit({ gig }: GigRatingEditP
                 </div>
               )}
 
+              </div>
+
               {/* Edit button */}
               <button
                 type="button"
@@ -329,11 +343,58 @@ export const GigRatingEdit = memo(function GigRatingEdit({ gig }: GigRatingEditP
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
-                Edit Rating Dates
+                Edit Gig
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Name & Type */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Gig Name</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    disabled={isSubmitting}
+                    required
+                    className="w-full px-4 py-3 sm:px-3 sm:py-2 min-h-[48px] sm:min-h-[36px] border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:bg-gray-50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                  <select
+                    value={type}
+                    onChange={(e) => setType(e.target.value)}
+                    disabled={isSubmitting}
+                    required
+                    className="w-full px-4 py-3 sm:px-3 sm:py-2 min-h-[48px] sm:min-h-[36px] border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:bg-gray-50"
+                  >
+                    {!GIG_TYPES.includes(type as (typeof GIG_TYPES)[number]) && (
+                      <option value={type}>{type} (legacy)</option>
+                    )}
+                    {GIG_TYPES.map((t) => (
+                      <option key={t} value={t}>
+                        {t}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    disabled={isSubmitting}
+                    className="w-full px-4 py-3 sm:px-3 sm:py-2 min-h-[48px] sm:min-h-[36px] border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:bg-gray-50"
+                  >
+                    <option value="active">Active</option>
+                    <option value="paused">Paused</option>
+                    <option value="deprecated">Deprecated</option>
+                  </select>
+                </div>
+              </div>
+
               {/* Rated checkbox */}
               <div className="p-3 bg-gray-50 rounded-lg">
                 <Checkbox

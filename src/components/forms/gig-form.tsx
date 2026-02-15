@@ -2,6 +2,7 @@
 
 import { memo, useState, useCallback, useMemo } from 'react';
 import { SubmitButton } from '@/components/ui/submit-button';
+import { GIG_TYPES } from '@/lib/gig-types';
 
 interface GigFormProps {
   action: (formData: FormData) => void | Promise<void>;
@@ -14,19 +15,6 @@ interface GigFormProps {
     nextPossibleRateDate?: string;
   };
 }
-
-// Common gig types for quick selection
-const COMMON_GIG_TYPES = [
-  'API Development',
-  'MVP Building',
-  'CI/CD Setup',
-  'Full-Stack Development',
-  'Frontend Development',
-  'Backend Development',
-  'Mobile App',
-  'WordPress',
-  'Other',
-] as const;
 
 // Memoized form field component
 const FormField = memo(({
@@ -225,7 +213,7 @@ export const GigForm = memo(({
           label="Gig Type"
           name="type"
           required
-          helpText="Select a category or enter a custom type"
+          helpText="Select a category for this gig"
         >
           <div className="space-y-2">
             <select
@@ -249,30 +237,12 @@ export const GigForm = memo(({
               }}
             >
               <option value="">Select a type...</option>
-              {COMMON_GIG_TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {type}
+              {GIG_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {t}
                 </option>
               ))}
             </select>
-            
-            {gigType === 'Other' && (
-              <input
-                type="text"
-                name="customType"
-                placeholder="Enter custom gig type"
-                required
-                className={`
-                  w-full rounded-lg border border-gray-300
-                  px-3 py-2 sm:py-2.5
-                  text-sm sm:text-base
-                  transition-all duration-200
-                  placeholder:text-gray-400
-                  focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none
-                  hover:border-gray-400
-                `}
-              />
-            )}
           </div>
         </FormField>
 

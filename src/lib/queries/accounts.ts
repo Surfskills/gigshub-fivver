@@ -1,6 +1,8 @@
 import { db } from '@/lib/db';
+import { PAGE_SIZE } from '@/lib/constants';
+import type { AccountLevel, AccountStatus, Platform } from '@prisma/client';
 
-/** Accounts whose most recent report has ranking page 1 or 2. Sorted by best rank first. */
+/** Accounts whose most recent report has ranking page 1 or 2. Sorted by best rank first. Limited to PAGE_SIZE. */
 export async function getTopPerformingAccounts() {
   const accounts = await db.account.findMany({
     where: { status: 'active' },
@@ -18,12 +20,34 @@ export async function getTopPerformingAccounts() {
       const r = a.shiftReports[0];
       return r && r.rankingPage != null && r.rankingPage <= 2;
     })
-    .sort((a, b) => (a.shiftReports[0]!.rankingPage ?? 99) - (b.shiftReports[0]!.rankingPage ?? 99));
+    .sort((a, b) => (a.shiftReports[0]!.rankingPage ?? 99) - (b.shiftReports[0]!.rankingPage ?? 99))
+    .slice(0, PAGE_SIZE);
 }
 
-/** All accounts sorted by page rank (best first: page 1, then 2, then 3…, null last). */
-export async function getAccountsRankedByPage() {
-  const accounts = await db.account.findMany({
+export type AccountsFilter = {
+  search?: string;
+  level?: AccountLevel;
+  status?: AccountStatus;
+  platform?: Platform;
+};
+
+/** All accounts sorted by page rank (best first). Paginated with PAGE_SIZE. Supports search and filters. */
+export async function getAccountsRankedByPage(page = 1, filter?: AccountsFilter) {
+  const searchLower = filter?.search?.trim().toLowerCase();
+  const where = {
+    ...(filter?.level && { accountLevel: filter.level }),
+    ...(filter?.status && { status: filter.status }),
+    ...(filter?.platform && { platform: filter.platform }),
+    ...(searchLower && {
+      OR: [
+        { username: { contains: searchLower, mode: 'insensitive' as const } },
+        { email: { contains: searchLower, mode: 'insensitive' as const } },
+      ],
+    }),
+  };
+
+  const all = await db.account.findMany({
+    where,
     include: {
       _count: { select: { gigs: true, shiftReports: true } },
       shiftReports: {
@@ -33,11 +57,15 @@ export async function getAccountsRankedByPage() {
       },
     },
   });
-  return accounts.sort((a, b) => {
+  const sorted = all.sort((a, b) => {
     const rankA = a.shiftReports[0]?.rankingPage ?? 999;
     const rankB = b.shiftReports[0]?.rankingPage ?? 999;
     return rankA - rankB;
   });
+  const total = sorted.length;
+  const start = (page - 1) * PAGE_SIZE;
+  const accounts = sorted.slice(start, start + PAGE_SIZE);
+  return { accounts, total, page, totalPages: Math.ceil(total / PAGE_SIZE) };
 }
 
 export async function getAccountById(accountId: string) {
@@ -47,7 +75,7 @@ export async function getAccountById(accountId: string) {
       gigs: { orderBy: { createdAt: 'desc' } },
       _count: { select: { shiftReports: true } },
       shiftReports: {
-        take: 25,
+        take: PAGE_SIZE,
         orderBy: [{ reportDate: 'desc' }, { shift: 'asc' }],
         include: { reportedBy: { select: { name: true } } },
       },

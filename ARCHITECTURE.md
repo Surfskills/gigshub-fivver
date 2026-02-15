@@ -2,7 +2,7 @@
 
 ## System Overview
 
-The Freelance Operations Brain is a **source-of-truth reporting system** for managing multiple freelancing accounts across platforms. It enforces accountability through manual shift reporting and provides analytics for operational insights.
+The Mini Gigs Hub is a **source-of-truth reporting system** for managing multiple freelancing accounts across platforms. It enforces accountability through manual shift reporting and provides analytics for operational insights.
 
 ## Architecture Principles
 

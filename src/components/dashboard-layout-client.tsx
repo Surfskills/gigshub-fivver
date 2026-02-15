@@ -35,8 +35,7 @@ export function DashboardLayoutClient({ children, user }: DashboardLayoutClientP
   const navLinks = [
     { href: '/dashboard', label: 'Dashboard', icon: '📊' },
     { href: '/accounts', label: 'Accounts', icon: '👥' },
-    { href: '/reports', label: 'Submit Reports', icon: '📝' },
-    { href: '/reports/history', label: 'History', icon: '📋' },
+    { href: '/reports', label: 'Reports', icon: '📝' },
     { href: '/analytics', label: 'Analytics', icon: '📈' },
   ];
 

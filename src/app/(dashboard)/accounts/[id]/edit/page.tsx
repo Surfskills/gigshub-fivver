@@ -66,6 +66,10 @@ export default async function EditAccountPage({ params }: EditAccountPageProps) 
     const currency = (formData.get('currency') as string) ?? acc.currency;
     const status = (formData.get('status') as AccountStatus) ?? acc.status;
     const accountLevel = (formData.get('accountLevel') as AccountLevel) ?? acc.accountLevel;
+    const successRateVal = formData.get('successRate') as string | null;
+    const successRate = successRateVal && successRateVal.trim() ? Number(successRateVal) : null;
+    const browserType = (formData.get('browserType') as string)?.trim() || null;
+    const proxy = (formData.get('proxy') as string)?.trim() || null;
 
     const result = await updateAccount(params.id, {
       username,
@@ -73,6 +77,9 @@ export default async function EditAccountPage({ params }: EditAccountPageProps) 
       currency,
       status,
       accountLevel,
+      successRate,
+      browserType,
+      proxy,
     });
 
     if (result.success) {
@@ -112,6 +119,9 @@ export default async function EditAccountPage({ params }: EditAccountPageProps) 
                   currency: account.currency,
                   status: account.status,
                   accountLevel: account.accountLevel,
+                  successRate: account.successRate != null ? Number(account.successRate) : null,
+                  browserType: account.browserType,
+                  proxy: account.proxy,
                 }}
               />
             </Suspense>

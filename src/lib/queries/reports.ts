@@ -1,9 +1,11 @@
 import { db } from '@/lib/db';
-import { startOfDay, endOfDay } from 'date-fns';
+
+/** Report interval in hours - a report is due when 48+ hours have passed since the last one. */
+export const REPORT_INTERVAL_HOURS = 48;
 
 export async function getMissingReportsToday() {
-  const today = new Date();
-  const todayStart = startOfDay(today);
+  const now = new Date();
+  const cutoff = new Date(now.getTime() - REPORT_INTERVAL_HOURS * 60 * 60 * 1000);
 
   const accounts = await db.account.findMany({
     where: { status: 'active' },
@@ -12,31 +14,25 @@ export async function getMissingReportsToday() {
       platform: true,
       username: true,
       shiftReports: {
-        where: {
-          reportDate: todayStart,
-        },
-        select: {
-          shift: true,
-        },
+        orderBy: { createdAt: 'desc' },
+        take: 1,
+        select: { createdAt: true },
       },
     },
   });
 
   return accounts
-    .map((account) => {
-      const submittedShifts = account.shiftReports.map((r) => r.shift);
-      const missingShifts = ['AM', 'PM'].filter(
-        (shift) => !submittedShifts.includes(shift as any)
-      );
-
-      return {
-        id: account.id,
-        platform: account.platform,
-        username: account.username,
-        missingShifts,
-      };
+    .filter((account) => {
+      const lastReport = account.shiftReports[0];
+      if (!lastReport) return true;
+      return new Date(lastReport.createdAt) < cutoff;
     })
-    .filter((a) => a.missingShifts.length > 0);
+    .map((account) => ({
+      id: account.id,
+      platform: account.platform,
+      username: account.username,
+      missingShifts: ['Report overdue (48+ hours)'],
+    }));
 }
 
 export async function getAccountHealthMetrics(accountId: string, days = 7) {

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { db } from '@/lib/db';
 import { getReportById } from '@/lib/actions/reports';
 import { ReportEditForm } from '@/components/forms/report-edit-form';
 
@@ -12,7 +13,13 @@ interface ReportEditPageProps {
 
 export default async function ReportEditPage({ params }: ReportEditPageProps) {
   const { id: accountId, reportId } = await params;
-  const report = await getReportById(reportId);
+  const [report, users] = await Promise.all([
+    getReportById(reportId),
+    db.user.findMany({
+      select: { id: true, name: true },
+      orderBy: { name: 'asc' },
+    }),
+  ]);
 
   if (!report || report.accountId !== accountId) {
     notFound();
@@ -53,7 +60,7 @@ export default async function ReportEditPage({ params }: ReportEditPageProps) {
 
       {/* Form container with max width for readability */}
       <div className="w-full max-w-4xl">
-        <ReportEditForm report={report} />
+        <ReportEditForm report={report} users={users.map((u) => ({ id: u.id, name: u.name }))} />
       </div>
     </div>
   );

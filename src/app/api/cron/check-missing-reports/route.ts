@@ -11,7 +11,6 @@ export async function GET(request: Request) {
 
   const { getMissingReportsToday } = await import('@/lib/queries/reports');
   const { sendMissingReportsAlert } = await import('@/lib/email/send');
-  const { db } = await import('@/lib/db');
   const { format } = await import('date-fns');
 
   const missingReports = await getMissingReportsToday();
@@ -20,21 +19,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: 'No missing reports' });
   }
 
-  const admins = await db.user.findMany({
-    where: { role: 'admin' },
-    select: { email: true },
-  });
-
-  const adminEmails = admins.map((a) => a.email);
-
-  if (adminEmails.length === 0) {
-    return NextResponse.json({ error: 'No admin emails' }, { status: 500 });
-  }
-
   const today = format(new Date(), 'MMMM dd, yyyy');
 
-  await sendMissingReportsAlert(
-    adminEmails,
+  const result = await sendMissingReportsAlert(
+    [],
     missingReports.map((r) => ({
       platform: r.platform,
       username: r.username,
@@ -42,6 +30,10 @@ export async function GET(request: Request) {
     })),
     today
   );
+
+  if (!result.success) {
+    return NextResponse.json({ error: 'Failed to send alert', details: result.error }, { status: 500 });
+  }
 
   return NextResponse.json({
     message: 'Alert sent',

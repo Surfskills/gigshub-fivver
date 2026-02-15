@@ -1,20 +1,37 @@
 'use client';
 
-import { useState, memo, useCallback, useMemo } from 'react';
-import {
-  submitShiftReport,
-  type AccountCreated,
-  type OrderInProgress,
-} from '@/lib/actions/reports';
+import { useState, memo, useCallback, useMemo, useEffect } from 'react';
+import Link from 'next/link';
+import { submitShiftReport, type OrderInProgress } from '@/lib/actions/reports';
 import { Shift } from '@prisma/client';
+
+export type LastReportData = {
+  id?: string;
+  reportDate?: Date | string;
+  ordersCompleted: number;
+  pendingOrders: number;
+  availableBalance: number;
+  pendingBalance: number;
+  rankingPage?: number;
+  successRate?: number;
+  notes?: string;
+  rating?: number;
+  handedOverToUserId?: string | null;
+  ordersInProgress?: { account: string; deadline: string; handlerPhone: string }[];
+};
+
+export type UserOption = { id: string; name: string };
 
 interface ShiftReportFormProps {
   accountId: string;
   accountName: string;
   existingShifts: Shift[];
+  users: UserOption[];
+  lastReport?: LastReportData;
+  onReportSubmitted?: (accountId: string) => void;
 }
 
-// Memoized form input component
+// Memoized form input component (controlled)
 const FormInput = memo(({
   label,
   name,
@@ -25,6 +42,8 @@ const FormInput = memo(({
   step,
   placeholder,
   helpText,
+  value,
+  onChange,
 }: {
   label: string;
   name: string;
@@ -35,6 +54,8 @@ const FormInput = memo(({
   step?: string;
   placeholder?: string;
   helpText?: string;
+  value: string | number;
+  onChange: (value: string) => void;
 }) => (
   <div className="space-y-1.5">
     <label htmlFor={name} className="block text-xs sm:text-sm font-semibold text-gray-700">
@@ -50,6 +71,8 @@ const FormInput = memo(({
       max={max}
       step={step}
       placeholder={placeholder}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
       className="
         w-full rounded-lg border border-gray-300
         px-3 py-2 sm:py-2.5
@@ -102,47 +125,6 @@ const SectionHeader = memo(({ title, description }: { title: string; description
   </div>
 ));
 SectionHeader.displayName = 'SectionHeader';
-
-// Memoized account row component
-const AccountRow = memo(({
-  account,
-  index,
-  onUpdate,
-  onRemove,
-}: {
-  account: AccountCreated;
-  index: number;
-  onUpdate: (i: number, field: 'email' | 'type', value: string) => void;
-  onRemove: (i: number) => void;
-}) => (
-  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-    <input
-      type="email"
-      value={account.email}
-      onChange={(e) => onUpdate(index, 'email', e.target.value)}
-      placeholder="email@example.com"
-      className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
-    />
-    <select
-      value={account.type}
-      onChange={(e) => onUpdate(index, 'type', e.target.value)}
-      className="sm:w-28 rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
-    >
-      <option value="seller">Seller</option>
-      <option value="buyer">Buyer</option>
-    </select>
-    <button
-      type="button"
-      onClick={() => onRemove(index)}
-      className="sm:w-auto px-3 py-2 text-xs sm:text-sm font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
-      aria-label="Remove account"
-    >
-      <span className="sm:hidden">Remove</span>
-      <span className="hidden sm:inline">×</span>
-    </button>
-  </div>
-));
-AccountRow.displayName = 'AccountRow';
 
 // Memoized order row component
 const OrderRow = memo(({
@@ -204,10 +186,10 @@ const AllReportsComplete = memo(({ accountName }: { accountName: string }) => (
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-sm sm:text-base text-emerald-900 mb-1">
-          All Reports Submitted ✓
+          Report Submitted ✓
         </p>
         <p className="text-xs sm:text-sm text-emerald-700">
-          All shift reports for <span className="font-semibold">{accountName}</span> have been submitted today.
+          <span className="font-semibold">{accountName}</span> has been reported. Next report due in 48 hours.
         </p>
       </div>
     </div>
@@ -218,13 +200,44 @@ AllReportsComplete.displayName = 'AllReportsComplete';
 export const ShiftReportForm = memo(({ 
   accountId, 
   accountName, 
-  existingShifts 
+  existingShifts,
+  users,
+  lastReport,
+  onReportSubmitted,
 }: ShiftReportFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [accountsCreated, setAccountsCreated] = useState<AccountCreated[]>([]);
-  const [ordersInProgress, setOrdersInProgress] = useState<OrderInProgress[]>([]);
+  const [ordersInProgress, setOrdersInProgress] = useState<OrderInProgress[]>(
+    () => (lastReport?.ordersInProgress?.length ? lastReport.ordersInProgress as OrderInProgress[] : [])
+  );
+
+  // Pre-populate from last report - controlled state so form always reflects last data
+  const [ordersCompleted, setOrdersCompleted] = useState<string>(() => String(lastReport?.ordersCompleted ?? ''));
+  const [pendingOrders, setPendingOrders] = useState<string>(() => String(lastReport?.pendingOrders ?? ''));
+  const [availableBalance, setAvailableBalance] = useState<string>(() => String(lastReport?.availableBalance ?? ''));
+  const [pendingBalance, setPendingBalance] = useState<string>(() => String(lastReport?.pendingBalance ?? ''));
+  const [rankingPage, setRankingPage] = useState<string>(() => (lastReport?.rankingPage != null ? String(lastReport.rankingPage) : ''));
+  const [rating, setRating] = useState<string>(() => (lastReport?.rating != null ? String(lastReport.rating) : ''));
+  const [successRate, setSuccessRate] = useState<string>(() => (lastReport?.successRate != null ? String(lastReport.successRate) : ''));
+  const [handedOverToUserId, setHandedOverToUserId] = useState<string>(() => lastReport?.handedOverToUserId ?? '');
+  const [notes, setNotes] = useState<string>(() => lastReport?.notes ?? '');
+
+  // Sync form when lastReport changes (hydration, late data, or account switch)
+  useEffect(() => {
+    if (lastReport) {
+      setOrdersCompleted(String(lastReport.ordersCompleted ?? ''));
+      setPendingOrders(String(lastReport.pendingOrders ?? ''));
+      setAvailableBalance(String(lastReport.availableBalance ?? ''));
+      setPendingBalance(String(lastReport.pendingBalance ?? ''));
+      setRankingPage(lastReport.rankingPage != null ? String(lastReport.rankingPage) : '');
+      setRating(lastReport.rating != null ? String(lastReport.rating) : '');
+      setSuccessRate(lastReport.successRate != null ? String(lastReport.successRate) : '');
+      setHandedOverToUserId(lastReport.handedOverToUserId ?? '');
+      setNotes(lastReport.notes ?? '');
+      setOrdersInProgress(lastReport.ordersInProgress?.length ? (lastReport.ordersInProgress as OrderInProgress[]) : []);
+    }
+  }, [lastReport]);
 
   const today = useMemo(() => new Date().toISOString().split('T')[0], []);
   
@@ -234,23 +247,6 @@ export const ShiftReportForm = memo(({
   );
 
   // Memoized callbacks
-  const addAccountRow = useCallback(() => {
-    setAccountsCreated(prev => [...prev, { email: '', type: 'seller' }]);
-  }, []);
-
-  const removeAccountRow = useCallback((i: number) => {
-    setAccountsCreated(prev => prev.filter((_, idx) => idx !== i));
-  }, []);
-
-  const updateAccountRow = useCallback((i: number, field: 'email' | 'type', value: string) => {
-    setAccountsCreated(prev => {
-      const next = [...prev];
-      if (field === 'email') next[i] = { ...next[i], email: value };
-      else next[i] = { ...next[i], type: value as 'seller' | 'buyer' };
-      return next;
-    });
-  }, []);
-
   const addOrderRow = useCallback(() => {
     setOrdersInProgress(prev => [...prev, { account: '', deadline: today, handlerPhone: '' }]);
   }, [today]);
@@ -277,36 +273,43 @@ export const ShiftReportForm = memo(({
     setSuccess(false);
 
     const formData = new FormData(form);
-    const validAccounts = accountsCreated.filter((a) => a.email.trim());
     const validOrders = ordersInProgress.filter((o) => o.account.trim());
-    const ratingVal = formData.get('rating');
 
     const result = await submitShiftReport({
       accountId,
       reportDate: today,
       shift: formData.get('shift') as Shift,
-      ordersCompleted: Number(formData.get('ordersCompleted')),
-      pendingOrders: Number(formData.get('pendingOrders')),
-      availableBalance: Number(formData.get('availableBalance')),
-      pendingBalance: Number(formData.get('pendingBalance')),
-      rankingPage: formData.get('rankingPage') ? Number(formData.get('rankingPage')) : undefined,
-      notes: (formData.get('notes') as string) || undefined,
-      accountsCreated: validAccounts.length > 0 ? validAccounts : undefined,
-      rating: ratingVal ? Number(ratingVal) : undefined,
+      ordersCompleted: Number(ordersCompleted) || 0,
+      pendingOrders: Number(pendingOrders) || 0,
+      availableBalance: Number(availableBalance) || 0,
+      pendingBalance: Number(pendingBalance) || 0,
+      rankingPage: Number(rankingPage),
+      successRate: Number(successRate),
+      handedOverToUserId: handedOverToUserId,
+      notes: notes.trim() || undefined,
+      rating: rating ? Number(rating) : undefined,
       ordersInProgress: validOrders.length > 0 ? validOrders : undefined,
     });
 
     if (result.success) {
       setSuccess(true);
-      form.reset();
-      setAccountsCreated([]);
+      setOrdersCompleted('');
+      setPendingOrders('');
+      setAvailableBalance('');
+      setPendingBalance('');
+      setRankingPage('');
+      setRating('');
+      setSuccessRate('');
+      setHandedOverToUserId('');
+      setNotes('');
       setOrdersInProgress([]);
+      onReportSubmitted?.(accountId);
     } else {
       setError(result.error || 'Submission failed. Please try again.');
     }
 
     setIsSubmitting(false);
-  }, [accountId, today, accountsCreated, ordersInProgress]);
+  }, [accountId, today, ordersInProgress, onReportSubmitted, ordersCompleted, pendingOrders, availableBalance, pendingBalance, rankingPage, rating, successRate, handedOverToUserId, notes]);
 
   // Early return for all reports complete
   if (availableShifts.length === 0) {
@@ -322,8 +325,13 @@ export const ShiftReportForm = memo(({
             {accountName}
           </h3>
           <p className="text-xs sm:text-sm text-gray-600">
-            Submit shift report for today
+            {lastReport ? `Pre-filled from report: ${new Date(lastReport.reportDate!).toLocaleDateString()}` : 'Enter values manually'}
           </p>
+          {lastReport?.id && (
+            <p className="text-xs sm:text-sm text-gray-600 mt-1">
+              <Link href={`/accounts/${accountId}/reports/${lastReport.id}/edit`} className="text-blue-600 hover:underline">View/Edit last report</Link>
+            </p>
+          )}
         </div>
 
         {/* Alerts */}
@@ -374,9 +382,12 @@ export const ShiftReportForm = memo(({
           </p>
         </div>
 
-        {/* Basic Metrics */}
+        {/* Basic Metrics - pre-populated from last report */}
         <div className="mb-5 sm:mb-6">
-          <SectionHeader title="Orders & Balance" description="Core performance metrics" />
+          <SectionHeader 
+            title="Orders & Balance" 
+            description={lastReport ? "Pre-filled from last report — update only what changed" : "Core performance metrics"} 
+          />
           <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
             <FormInput
               label="Orders Completed"
@@ -384,6 +395,8 @@ export const ShiftReportForm = memo(({
               type="number"
               required
               min="0"
+              value={ordersCompleted}
+              onChange={setOrdersCompleted}
             />
             <FormInput
               label="Pending Orders"
@@ -391,6 +404,8 @@ export const ShiftReportForm = memo(({
               type="number"
               required
               min="0"
+              value={pendingOrders}
+              onChange={setPendingOrders}
             />
             <FormInput
               label="Available Balance"
@@ -399,6 +414,8 @@ export const ShiftReportForm = memo(({
               required
               min="0"
               step="0.01"
+              value={availableBalance}
+              onChange={setAvailableBalance}
             />
             <FormInput
               label="Pending Balance"
@@ -407,30 +424,80 @@ export const ShiftReportForm = memo(({
               required
               min="0"
               step="0.01"
+              value={pendingBalance}
+              onChange={setPendingBalance}
             />
           </div>
         </div>
 
-        {/* Optional Metrics */}
+        {/* Metrics */}
         <div className="mb-5 sm:mb-6">
-          <SectionHeader title="Optional Metrics" description="Ranking and rating information" />
+          <SectionHeader title="Metrics" description="Ranking, rating, success rate and handover analyst" />
           <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
             <FormInput
               label="Ranking Page"
               name="rankingPage"
               type="number"
+              required
               min="1"
               placeholder="e.g., 1"
+              value={rankingPage}
+              onChange={setRankingPage}
             />
             <FormInput
               label="Rating"
               name="rating"
               type="number"
+              required
               min="0"
               max="5"
               step="0.01"
               placeholder="e.g., 4.85"
+              value={rating}
+              onChange={setRating}
             />
+            <FormInput
+              label="Success Rate (%)"
+              name="successRate"
+              type="number"
+              required
+              min="0"
+              max="100"
+              step="0.01"
+              placeholder="e.g., 95.5"
+              value={successRate}
+              onChange={setSuccessRate}
+            />
+            <div className="space-y-1.5">
+              <label htmlFor="handedOverToUserId" className="block text-xs sm:text-sm font-semibold text-gray-700">
+                Analyst (handover to) <span className="text-red-500 ml-0.5">*</span>
+              </label>
+              <select
+                id="handedOverToUserId"
+                name="handedOverToUserId"
+                required
+                value={handedOverToUserId}
+                onChange={(e) => setHandedOverToUserId(e.target.value)}
+                className="
+                  w-full rounded-lg border border-gray-300
+                  px-3 py-2 sm:py-2.5
+                  text-sm sm:text-base
+                  transition-all duration-200
+                  focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none
+                  hover:border-gray-400
+                  appearance-none bg-[length:16px_16px] bg-[position:right_0.75rem_center] bg-no-repeat
+                  cursor-pointer
+                "
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`
+                }}
+              >
+                <option value="">— Select analyst —</option>
+                {users.map((u) => (
+                  <option key={u.id} value={u.id}>{u.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
@@ -466,38 +533,6 @@ export const ShiftReportForm = memo(({
           </button>
         </div>
 
-        {/* Accounts Created */}
-        <div className="mb-5 sm:mb-6 p-3 sm:p-4 bg-emerald-50/50 rounded-lg border border-emerald-100">
-          <SectionHeader 
-            title="Accounts Created" 
-            description="New accounts created during this shift"
-          />
-          <div className="space-y-2 sm:space-y-3 mb-3">
-            {accountsCreated.length === 0 ? (
-              <p className="text-xs sm:text-sm text-gray-500 text-center py-3">
-                No accounts created
-              </p>
-            ) : (
-              accountsCreated.map((account, i) => (
-                <AccountRow
-                  key={i}
-                  account={account}
-                  index={i}
-                  onUpdate={updateAccountRow}
-                  onRemove={removeAccountRow}
-                />
-              ))
-            )}
-          </div>
-          <button
-            type="button"
-            onClick={addAccountRow}
-            className="text-xs sm:text-sm font-medium text-emerald-600 hover:text-emerald-800 transition-colors"
-          >
-            + Add account
-          </button>
-        </div>
-
         {/* Notes */}
         <div className="mb-5 sm:mb-6">
           <label htmlFor="notes" className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5">
@@ -507,6 +542,8 @@ export const ShiftReportForm = memo(({
             id="notes"
             name="notes"
             rows={4}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
             placeholder="Any issues, observations, or handover notes..."
             className="
               w-full rounded-lg border border-gray-300

@@ -45,36 +45,44 @@ enum UserRole {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  clerkId       String    @unique // or supabaseId
-  email         String    @unique
-  name          String
-  role          UserRole  @default(operator)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                  String        @id @default(cuid())
+  clerkId             String        @unique // or supabaseId
+  email               String        @unique
+  name                String
+  role                UserRole      @default(operator)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
   
-  shiftReports  ShiftReport[]
+  accountsCreated     Account[]
+  shiftReports        ShiftReport[]   @relation("ReportedBy")
+  reportsHandedOverTo ShiftReport[]  @relation("HandedOverTo")
   
   @@index([clerkId])
 }
 
 model Account {
-  id            String        @id @default(cuid())
-  platform      Platform
-  email         String
-  username      String
-  typeOfGigs    String        // e.g., "API Development, MVP Building"
-  currency      String        @default("USD")
-  status        AccountStatus @default(active)
-  accountLevel  AccountLevel  @default(starter)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id               String        @id @default(cuid())
+  platform         Platform
+  email            String
+  username         String
+  typeOfGigs       String        // e.g., "API Development, MVP Building"
+  currency         String        @default("USD")
+  status           AccountStatus @default(active)
+  accountLevel     AccountLevel  @default(starter)
+  successRate      Decimal?      @db.Decimal(5, 2)  // 0-100 percentage
+  browserType      String?       // e.g., Chrome, Firefox, Safari
+  proxy            String?       // proxy configuration/info
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  createdByUserId  String?
   
-  gigs          Gig[]
-  shiftReports  ShiftReport[]
+  createdBy        User?         @relation(fields: [createdByUserId], references: [id])
+  gigs             Gig[]
+  shiftReports     ShiftReport[]
   
   @@unique([platform, email])
   @@index([status])
+  @@index([createdByUserId])
 }
 
 model Gig {
@@ -96,30 +104,33 @@ model Gig {
 }
 
 model ShiftReport {
-  id                String    @id @default(cuid())
-  accountId         String
-  reportDate        DateTime  @db.Date // YYYY-MM-DD only
-  shift             Shift
+  id                   String    @id @default(cuid())
+  accountId            String
+  reportDate           DateTime  @db.Date // YYYY-MM-DD only
+  shift                Shift
   
   // Metrics
-  ordersCompleted   Int       @default(0)
-  pendingOrders     Int       @default(0)
-  availableBalance  Decimal   @db.Decimal(10, 2)
-  pendingBalance    Decimal   @db.Decimal(10, 2)
-  rankingPage       Int?      // nullable if not applicable
-  notes             String?   @db.Text
+  ordersCompleted      Int       @default(0)
+  pendingOrders        Int       @default(0)
+  availableBalance     Decimal   @db.Decimal(10, 2)
+  pendingBalance       Decimal   @db.Decimal(10, 2)
+  rankingPage          Int?      // nullable if not applicable
+  successRate          Decimal?  @db.Decimal(5, 2)  // 0-100 percentage
+  notes                String?   @db.Text
 
   // Handover
-  accountsCreated   Json?     // [{ email: string, type: "seller" | "buyer" }]
-  rating            Decimal?  @db.Decimal(3, 2)  // e.g. 4.85
-  ordersInProgress  Json?     // [{ account: string, deadline: string (ISO), handlerPhone: string }]
+  accountsCreated      Json?     // [{ email: string, type: "seller" | "buyer" }]
+  rating               Decimal?  @db.Decimal(3, 2)  // e.g. 4.85
+  ordersInProgress     Json?     // [{ account: string, deadline: string (ISO), handlerPhone: string }]
+  handedOverToUserId   String?   // analyst receiving the report
   
   // Audit
-  reportedByUserId  String
-  createdAt         DateTime  @default(now())
+  reportedByUserId     String
+  createdAt            DateTime  @default(now())
   
-  account           Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  reportedBy        User      @relation(fields: [reportedByUserId], references: [id])
+  account              Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  reportedBy           User      @relation("ReportedBy", fields: [reportedByUserId], references: [id])
+  handedOverTo         User?     @relation("HandedOverTo", fields: [handedOverToUserId], references: [id])
   
   // CRITICAL: Only one report per account per date per shift
   @@unique([accountId, reportDate, shift])

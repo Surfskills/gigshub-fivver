@@ -4,9 +4,25 @@ import Link from 'next/link';
 import { getAccountsRankedByPage } from '@/lib/queries/accounts';
 import { ExportButton } from '@/components/export-button';
 import { AccountsTable } from '@/components/tables/accounts-table';
+import { ACCOUNT_LEVEL_LABELS } from '@/lib/account-level';
+import { PAGE_SIZE } from '@/lib/constants';
+import type { AccountLevel, AccountStatus, Platform } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
 export const dynamicParams = true;
+
+const STATUS_OPTIONS: { value: AccountStatus; label: string }[] = [
+  { value: 'active', label: 'Active' },
+  { value: 'paused', label: 'Paused' },
+  { value: 'risk', label: 'Risk' },
+];
+
+const PLATFORM_OPTIONS: { value: Platform; label: string }[] = [
+  { value: 'fiverr', label: 'Fiverr' },
+  { value: 'upwork', label: 'Upwork' },
+  { value: 'direct', label: 'Direct' },
+];
+
 // Metadata for SEO
 export const metadata = {
   title: 'Accounts | Freelance Manager',
@@ -119,21 +135,42 @@ function EmptyState() {
   );
 }
 
-export default async function AccountsPage() {
-  const accounts = await getAccountsRankedByPage();
+interface PageProps {
+  searchParams: Promise<{ page?: string; search?: string; level?: string; status?: string; platform?: string }>;
+}
+
+export default async function AccountsPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const page = Math.max(1, parseInt(params.page || '1', 10) || 1);
+  const search = params.search || undefined;
+  const level = (params.level as AccountLevel) || undefined;
+  const status = (params.status as AccountStatus) || undefined;
+  const platform = (params.platform as Platform) || undefined;
+
+  const filter = search || level || status || platform ? { search, level, status, platform } : undefined;
+
+  const result = await getAccountsRankedByPage(page, filter);
+  const { accounts } = result;
 
   const accountsData = accounts.map((account) => ({
     id: account.id,
     platform: account.platform,
     username: account.username,
-    email: account.email,
     typeOfGigs: account.typeOfGigs,
     status: account.status,
     accountLevel: account.accountLevel,
     gigsCount: account._count.gigs,
-    reportsCount: account._count.shiftReports,
     rankingPage: account.shiftReports[0]?.rankingPage ?? null,
+    successRate: account.successRate != null ? Number(account.successRate) : null,
   }));
+
+  const filterParams = new URLSearchParams();
+  if (search) filterParams.set('search', search);
+  if (level) filterParams.set('level', level);
+  if (status) filterParams.set('status', status);
+  if (platform) filterParams.set('platform', platform);
+  const filterQuery = filterParams.toString();
+  const baseUrl = filterQuery ? `/accounts?${filterQuery}` : '/accounts';
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -149,7 +186,7 @@ export default async function AccountsPage() {
                 Accounts
               </h1>
               <p className="mt-1 text-sm text-gray-600 sm:mt-2 sm:text-base">
-                Sorted by page rank (best first). Manage your freelancing platform accounts.
+                Sorted by page rank (best first). {result.total} {result.total === 1 ? 'account' : 'accounts'}.
               </p>
               
               {/* Mobile stats summary */}
@@ -192,12 +229,129 @@ export default async function AccountsPage() {
           </div>
         </header>
 
+        {/* Search and filters */}
+        <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4">
+          <form action="/accounts" method="get" className="flex flex-wrap items-end gap-4">
+            <input type="hidden" name="page" value="1" />
+            <div className="min-w-[180px] flex-1">
+              <label htmlFor="search" className="block text-xs font-medium text-gray-600 mb-1">
+                Search by name
+              </label>
+              <input
+                type="search"
+                id="search"
+                name="search"
+                defaultValue={search}
+                placeholder="Username or email..."
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              />
+            </div>
+            <div>
+              <label htmlFor="level" className="block text-xs font-medium text-gray-600 mb-1">
+                Level
+              </label>
+              <select
+                id="level"
+                name="level"
+                defaultValue={level || ''}
+                className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 min-w-[140px]"
+              >
+                <option value="">All levels</option>
+                {(Object.entries(ACCOUNT_LEVEL_LABELS) as [AccountLevel, string][]).map(([val, label]) => (
+                  <option key={val} value={val}>{label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="status" className="block text-xs font-medium text-gray-600 mb-1">
+                Status
+              </label>
+              <select
+                id="status"
+                name="status"
+                defaultValue={status || ''}
+                className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 min-w-[120px]"
+              >
+                <option value="">All statuses</option>
+                {STATUS_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="platform" className="block text-xs font-medium text-gray-600 mb-1">
+                Platform
+              </label>
+              <select
+                id="platform"
+                name="platform"
+                defaultValue={platform || ''}
+                className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 min-w-[120px]"
+              >
+                <option value="">All platforms</option>
+                {PLATFORM_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                className="rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
+              >
+                Apply
+              </button>
+              <Link
+                href="/accounts"
+                className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Clear
+              </Link>
+            </div>
+          </form>
+        </div>
+
         {/* Main content area */}
         <Suspense fallback={<AccountsTableSkeleton />}>
-          {accounts.length === 0 ? (
+          {accounts.length === 0 && !filter ? (
             <EmptyState />
+          ) : accounts.length === 0 ? (
+            <div className="rounded-lg border border-gray-200 bg-white p-12 text-center text-gray-500">
+              <p className="font-medium">No accounts match your filters</p>
+              <p className="mt-1 text-sm">Try adjusting your search or filters.</p>
+              <Link href="/accounts" className="mt-4 inline-block text-sm font-medium text-blue-600 hover:underline">
+                Clear all filters
+              </Link>
+            </div>
           ) : (
-            <AccountsTable rows={accountsData} />
+            <>
+              <AccountsTable rows={accountsData} />
+              {result.totalPages > 1 && (
+                <div className="mt-4 flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3">
+                  <p className="text-sm text-gray-600">
+                    Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, result.total)} of {result.total}
+                  </p>
+                  <div className="flex gap-2">
+                    <Link
+                      href={page > 1 ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}page=${page - 1}` : '#'}
+                      className={`rounded border px-3 py-1.5 text-sm font-medium ${
+                        page <= 1 ? 'pointer-events-none opacity-50' : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      Previous
+                    </Link>
+                    <Link
+                      href={page < result.totalPages ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}page=${page + 1}` : '#'}
+                      className={`rounded border px-3 py-1.5 text-sm font-medium ${
+                        page >= result.totalPages ? 'pointer-events-none opacity-50' : 'text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      Next
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </Suspense>
       </div>

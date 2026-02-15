@@ -1,7 +1,8 @@
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
+import Link from 'next/link';
 import { getMissingReportsToday } from '@/lib/queries/reports';
-import { getDashboardStats, getMonthlyTrends, getITSupportAnalystLeaderboard } from '@/lib/queries/dashboard';
+import { getDashboardStats, getMonthlyTrends, getITSupportAnalystLeaderboard, getNewlyCreatedAccountsCount } from '@/lib/queries/dashboard';
 import { getTopPerformingAccounts } from '@/lib/queries/accounts';
 import { TopPerformingAccountsCard } from '@/components/dashboard/top-performing-accounts-card';
 import { AlertButton } from '@/components/alert-button';
@@ -36,8 +37,8 @@ function ChartSkeleton() {
 
 function StatsSkeleton() {
   return (
-    <div className="grid gap-3 grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
-      {[...Array(5)].map((_, i) => (
+    <div className="grid gap-3 grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+      {[...Array(7)].map((_, i) => (
         <div key={i} className="animate-pulse rounded-lg border border-gray-200 bg-white p-3 sm:p-4 md:p-5">
           <div className="h-3 w-20 bg-gray-200 rounded mb-3" />
           <div className="h-8 w-16 bg-gray-300 rounded" />
@@ -95,14 +96,17 @@ export default async function DashboardPage() {
   let loadError: string | null = null;
 
   let topAccounts: Awaited<ReturnType<typeof getTopPerformingAccounts>> = [];
+  let newAccountsCount = 0;
   try {
-    const [missing, s, trends, lb, top] = await Promise.all([
+    const [missing, s, trends, lb, top, newCount] = await Promise.all([
       getMissingReportsToday(),
       getDashboardStats(),
       getMonthlyTrends(12),
       getITSupportAnalystLeaderboard(),
       getTopPerformingAccounts(),
+      getNewlyCreatedAccountsCount(),
     ]);
+    newAccountsCount = newCount;
     missingReports = missing;
     stats = s;
     monthlyTrends = trends;
@@ -116,6 +120,8 @@ export default async function DashboardPage() {
       accountsByPlatform: [],
       totalAvailableEarnings: 0,
       totalPendingEarnings: 0,
+      totalOrdersCompleted: 0,
+      totalOrdersInProgress: 0,
     };
     monthlyTrends = [];
     leaderboard = [];
@@ -205,7 +211,25 @@ export default async function DashboardPage() {
       <section aria-labelledby="main-stats-title">
         <h2 id="main-stats-title" className="sr-only">Main Statistics</h2>
         <Suspense fallback={<StatsSkeleton />}>
-          <div className="grid gap-3 grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
+          <div className="grid gap-3 grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+            <AccountHealthCard 
+              label="Total Accounts" 
+              value={totalAccounts}
+              icon={
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              }
+            />
+            <AccountHealthCard 
+              label="Newly Created (7 days)" 
+              value={newAccountsCount}
+              icon={
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+              }
+            />
             <AccountHealthCard 
               label="Total Gigs" 
               value={stats.totalGigs}
@@ -215,17 +239,8 @@ export default async function DashboardPage() {
                 </svg>
               }
             />
-            <AccountHealthCard 
-              label="Total Reports" 
-              value={stats.totalReports}
-              icon={
-                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              }
-            />
             <AccountHealthCard
-              label="Available"
+              label="Total Available"
               value={`$${stats.totalAvailableEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
               variant="success"
               icon={
@@ -235,7 +250,7 @@ export default async function DashboardPage() {
               }
             />
             <AccountHealthCard
-              label="Pending"
+              label="Pending Balance"
               value={`$${stats.totalPendingEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
               variant="warning"
               icon={
@@ -245,11 +260,20 @@ export default async function DashboardPage() {
               }
             />
             <AccountHealthCard 
-              label="Accounts" 
-              value={totalAccounts}
+              label="Total Orders Completed" 
+              value={stats.totalOrdersCompleted}
               icon={
                 <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              }
+            />
+            <AccountHealthCard 
+              label="Total Orders In Progress" 
+              value={stats.totalOrdersInProgress}
+              icon={
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               }
             />
@@ -257,7 +281,7 @@ export default async function DashboardPage() {
         </Suspense>
       </section>
 
-      {/* Platform Breakdown - Mobile First */}
+      {/* Platform Breakdown - Mobile First (before Summary Report, like other cards) */}
       <section aria-labelledby="platform-stats-title">
         <h2 id="platform-stats-title" className="mb-3 text-base font-semibold text-gray-900 sm:mb-4 sm:text-lg">
           Accounts by Platform
@@ -274,6 +298,25 @@ export default async function DashboardPage() {
             ))}
           </div>
         </Suspense>
+      </section>
+
+      {/* Summary Report */}
+      <section className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6 shadow-sm">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-base font-semibold text-gray-900">Summary Report</h2>
+            <p className="mt-1 text-sm text-gray-600">
+              Key business metrics, overview, and exportable report
+            </p>
+          </div>
+          <Link
+            href="/summary"
+            prefetch
+            className="inline-flex justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-500"
+          >
+            View Summary Report
+          </Link>
+        </div>
       </section>
 
       {/* Top Performing Accounts */}

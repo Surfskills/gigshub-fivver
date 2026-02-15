@@ -105,16 +105,19 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
     date: d.date,
     availableBalance: d.availableBalance,
     pendingBalance: d.pendingBalance,
+    reportCount: d.reportCount,
   }));
 
   const ratingData = trendData.map((d) => ({
     date: d.date,
     rating: d.rating,
+    ratingReportCount: d.ratingReportCount,
   }));
 
   const rankingData = trendData.map((d) => ({
     date: d.date,
     ranking: d.ranking,
+    rankingReportCount: d.rankingReportCount,
   }));
 
   return (
@@ -183,6 +186,9 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                       { key: 'availableBalance', color: '#10b981', name: 'Available' },
                       { key: 'pendingBalance', color: '#f59e0b', name: 'Pending' },
                     ]}
+                    rightAxisDataKey="reportCount"
+                    rightAxisName="Reports"
+                    rightAxisColor="#6366f1"
                   />
                 </Suspense>
               </section>
@@ -195,6 +201,9 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                     variant="rating"
                     data={ratingData}
                     dataKeys={[{ key: 'rating', color: '#3b82f6', name: 'Rating' }]}
+                    rightAxisDataKey="ratingReportCount"
+                    rightAxisName="Reports"
+                    rightAxisColor="#6366f1"
                   />
                 </Suspense>
               </section>
@@ -207,6 +216,9 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
                     variant="ranking"
                     data={rankingData}
                     dataKeys={[{ key: 'ranking', color: '#8b5cf6', name: 'Ranking Page' }]}
+                    rightAxisDataKey="rankingReportCount"
+                    rightAxisName="Reports"
+                    rightAxisColor="#6366f1"
                   />
                 </Suspense>
               </section>

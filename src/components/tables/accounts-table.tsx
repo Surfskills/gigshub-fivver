@@ -8,13 +8,12 @@ interface AccountRow {
   id: string;
   platform: Platform;
   username: string;
-  email: string;
   typeOfGigs: string;
   status: AccountStatus;
   accountLevel: AccountLevel;
   gigsCount: number;
-  reportsCount: number;
   rankingPage?: number | null;
+  successRate?: number | null;
 }
 
 interface AccountsTableProps {
@@ -58,28 +57,19 @@ const AccountCard = memo(({ row }: { row: AccountRow }) => {
           {row.username}
         </Link>
 
-        {/* Secondary Info Grid */}
-        <div className="grid grid-cols-2 gap-2 text-sm">
-          <div>
-            <span className="text-gray-500 block text-xs">Email</span>
-            <span className="text-gray-900 truncate block">{row.email}</span>
-          </div>
-          <div>
-            <span className="text-gray-500 block text-xs">Gig Type</span>
-            <span className="text-gray-900">{row.typeOfGigs}</span>
-          </div>
-        </div>
+        <div className="text-sm text-gray-600">{row.typeOfGigs}</div>
 
-        {/* Stats */}
-        <div className="flex gap-4 text-sm">
+        <div className="flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-1.5">
             <span className="text-gray-500">Gigs:</span>
             <span className="font-semibold text-gray-900">{row.gigsCount}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-gray-500">Reports:</span>
-            <span className="font-semibold text-gray-900">{row.reportsCount}</span>
-          </div>
+          {row.successRate != null && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-gray-500">Success:</span>
+              <span className="font-semibold text-gray-900">{row.successRate}%</span>
+            </div>
+          )}
         </div>
 
         {/* Actions */}
@@ -102,7 +92,7 @@ const AccountCard = memo(({ row }: { row: AccountRow }) => {
       </div>
 
       {/* Desktop Table Row (hidden on mobile) */}
-      <div className="hidden md:grid md:grid-cols-10 md:gap-4 md:items-center md:px-4 md:py-3">
+        <div className="hidden md:grid md:gap-3 md:items-center md:px-4 md:py-3" style={{ gridTemplateColumns: 'auto 1fr 1.5fr 1.5fr auto auto auto auto minmax(120px,auto)' }}>
         <div>
           {row.rankingPage != null ? (
             <span
@@ -128,8 +118,7 @@ const AccountCard = memo(({ row }: { row: AccountRow }) => {
             {row.username}
           </Link>
         </div>
-        <div className="text-gray-600 text-sm truncate">{row.email}</div>
-        <div className="text-gray-600 text-sm">{row.typeOfGigs}</div>
+        <div className="text-gray-600 text-sm truncate">{row.typeOfGigs}</div>
         <div>
           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getAccountLevelStyle(row.accountLevel)}`}>
             {formatAccountLevel(row.accountLevel)}
@@ -139,7 +128,7 @@ const AccountCard = memo(({ row }: { row: AccountRow }) => {
           <StatusBadge status={row.status} />
         </div>
         <div className="text-right font-medium pr-4">{row.gigsCount}</div>
-        <div className="text-right font-medium pr-4">{row.reportsCount}</div>
+        <div className="text-right pr-4">{row.successRate != null ? `${row.successRate}%` : '—'}</div>
         <div className="flex gap-4 justify-end items-center">
           <Link
             href={reportsHistoryUrl(row.id)}
@@ -197,16 +186,15 @@ export function AccountsTable({ rows }: AccountsTableProps) {
       {/* Desktop: Table View */}
       <div className="hidden md:block rounded-lg border border-gray-200 overflow-hidden bg-white">
         {/* Table Header */}
-        <div className="grid grid-cols-10 gap-4 px-4 py-3 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-700">
+        <div className="grid gap-3 px-4 py-3 bg-gray-50 border-b border-gray-200 text-sm font-medium text-gray-700" style={{ gridTemplateColumns: 'auto 1fr 1.5fr 1.5fr auto auto auto auto minmax(120px,auto)' }}>
           <div>Rank</div>
           <div>Platform</div>
           <div>Username</div>
-          <div>Email</div>
-          <div>Type of gigs</div>
+          <div>Type</div>
           <div>Level</div>
           <div>Status</div>
           <div className="text-right pr-4">Gigs</div>
-          <div className="text-right pr-4">Reports</div>
+          <div className="text-right pr-4">Success</div>
           <div className="text-right">Actions</div>
         </div>
 

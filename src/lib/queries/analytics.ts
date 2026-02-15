@@ -29,6 +29,7 @@ export async function getMetricTrends(days: number, accountId?: string) {
       ratingCount: number;
       rankingSum: number;
       rankingCount: number;
+      reportCount: number;
     }
   >();
 
@@ -43,6 +44,7 @@ export async function getMetricTrends(days: number, accountId?: string) {
       ratingCount: 0,
       rankingSum: 0,
       rankingCount: 0,
+      reportCount: 0,
     };
 
     const avail = Number(report.availableBalance);
@@ -50,6 +52,7 @@ export async function getMetricTrends(days: number, accountId?: string) {
     existing.availableBalance += avail;
     existing.pendingBalance += pend;
     existing.totalMoney += avail + pend;
+    existing.reportCount += 1;
 
     if (report.rating != null) {
       existing.ratingSum += Number(report.rating);
@@ -70,6 +73,9 @@ export async function getMetricTrends(days: number, accountId?: string) {
     pendingBalance: d.pendingBalance,
     rating: d.ratingCount > 0 ? Math.round((d.ratingSum / d.ratingCount) * 100) / 100 : null,
     ranking: d.rankingCount > 0 ? Math.round(d.rankingSum / d.rankingCount) : null,
+    reportCount: d.reportCount,
+    ratingReportCount: d.ratingCount,
+    rankingReportCount: d.rankingCount,
   }));
 }
 

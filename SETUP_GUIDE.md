@@ -7,7 +7,7 @@ Complete step-by-step guide to get your application running.
 - [ ] Node.js 18+ installed
 - [ ] PostgreSQL database (Neon/Supabase/PlanetScale)
 - [ ] Clerk account (free tier works)
-- [ ] Resend account for emails (free tier works)
+- [ ] Gmail account with App Password (for Nodemailer alerts)
 - [ ] Vercel account for deployment (optional)
 
 ---
@@ -38,8 +38,12 @@ NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
 NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
 
-# Resend - Get from https://resend.com/api-keys
-RESEND_API_KEY=re_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+# Nodemailer / Gmail SMTP - For alerts (use Gmail App Password)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-16-char-app-password
+ALERT_EMAIL_TO=ojjfred@gmail.com
 
 # Cron security (generate a random string)
 CRON_SECRET=use-a-long-random-string-here-min-32-chars

@@ -25,7 +25,7 @@ A serverless Next.js application for managing multiple freelancing accounts acro
 - **ORM**: Prisma
 - **Auth**: Clerk
 - **Charts**: Recharts
-- **Email**: Resend + React Email
+- **Email**: Nodemailer (Gmail SMTP) + React Email
 - **Deployment**: Vercel
 
 ## 📁 Project Structure
@@ -69,7 +69,7 @@ freelance-ops-brain/
 - Node.js 18+
 - PostgreSQL database
 - Clerk account
-- Resend account (for emails)
+- Gmail account with App Password (for email alerts)
 
 ### 1. Clone & Install
 

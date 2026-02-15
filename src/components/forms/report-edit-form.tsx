@@ -1,11 +1,7 @@
 'use client';
 
 import { useState, memo, useCallback, useMemo } from 'react';
-import {
-  updateShiftReport,
-  type AccountCreated,
-  type OrderInProgress,
-} from '@/lib/actions/reports';
+import { updateShiftReport, type OrderInProgress } from '@/lib/actions/reports';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Shift, Prisma } from '@prisma/client';
@@ -21,17 +17,22 @@ type Report = {
   availableBalance: Prisma.Decimal;
   pendingBalance: Prisma.Decimal;
   rankingPage: number | null;
+  successRate: Prisma.Decimal | null;
   notes: string | null;
-  accountsCreated: Prisma.JsonValue;
-  rating: Prisma.Decimal | null; // FIXED: Changed from JsonValue to Decimal | null
+  rating: Prisma.Decimal | null;
+  handedOverToUserId: string | null;
   ordersInProgress: Prisma.JsonValue;
   createdAt: Date;
   reportedBy: { name: string };
+  handedOverTo: { id: string; name: string } | null;
   account: { id: string; platform: string; username: string };
 };
 
+type UserOption = { id: string; name: string };
+
 interface ReportEditFormProps {
   report: Report;
+  users: UserOption[];
 }
 
 function parseJsonArray<T>(val: unknown): T[] {
@@ -157,47 +158,6 @@ const SectionHeader = memo(({ title, description }: { title: string; description
 ));
 SectionHeader.displayName = 'SectionHeader';
 
-// Memoized account row component
-const AccountRow = memo(({
-  account,
-  index,
-  onUpdate,
-  onRemove,
-}: {
-  account: AccountCreated;
-  index: number;
-  onUpdate: (i: number, field: 'email' | 'type', value: string) => void;
-  onRemove: (i: number) => void;
-}) => (
-  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-    <input
-      type="email"
-      value={account.email}
-      onChange={(e) => onUpdate(index, 'email', e.target.value)}
-      placeholder="email@example.com"
-      className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
-    />
-    <select
-      value={account.type}
-      onChange={(e) => onUpdate(index, 'type', e.target.value)}
-      className="sm:w-28 rounded-lg border border-gray-300 px-3 py-2 text-sm sm:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
-    >
-      <option value="seller">Seller</option>
-      <option value="buyer">Buyer</option>
-    </select>
-    <button
-      type="button"
-      onClick={() => onRemove(index)}
-      className="sm:w-auto px-3 py-2 text-xs sm:text-sm font-medium text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
-      aria-label="Remove account"
-    >
-      <span className="sm:hidden">Remove</span>
-      <span className="hidden sm:inline">×</span>
-    </button>
-  </div>
-));
-AccountRow.displayName = 'AccountRow';
-
 // Memoized order row component
 const OrderRow = memo(({
   order,
@@ -245,14 +205,11 @@ const OrderRow = memo(({
 ));
 OrderRow.displayName = 'OrderRow';
 
-export const ReportEditForm = memo(({ report }: ReportEditFormProps) => {
+export const ReportEditForm = memo(({ report, users }: ReportEditFormProps) => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [accountsCreated, setAccountsCreated] = useState<AccountCreated[]>(
-    () => parseJsonArray<AccountCreated>(report.accountsCreated)
-  );
   const [ordersInProgress, setOrdersInProgress] = useState<OrderInProgress[]>(
     () => parseJsonArray<OrderInProgress>(report.ordersInProgress)
   );
@@ -260,23 +217,6 @@ export const ReportEditForm = memo(({ report }: ReportEditFormProps) => {
   const today = useMemo(() => new Date().toISOString().split('T')[0], []);
 
   // Memoized callbacks
-  const addAccountRow = useCallback(() => {
-    setAccountsCreated(prev => [...prev, { email: '', type: 'seller' }]);
-  }, []);
-
-  const removeAccountRow = useCallback((i: number) => {
-    setAccountsCreated(prev => prev.filter((_, idx) => idx !== i));
-  }, []);
-
-  const updateAccountRow = useCallback((i: number, field: 'email' | 'type', value: string) => {
-    setAccountsCreated(prev => {
-      const next = [...prev];
-      if (field === 'email') next[i] = { ...next[i], email: value };
-      else next[i] = { ...next[i], type: value as 'seller' | 'buyer' };
-      return next;
-    });
-  }, []);
-
   const addOrderRow = useCallback(() => {
     setOrdersInProgress(prev => [...prev, { account: '', deadline: today, handlerPhone: '' }]);
   }, [today]);
@@ -303,7 +243,6 @@ export const ReportEditForm = memo(({ report }: ReportEditFormProps) => {
     setSuccess(false);
 
     const formData = new FormData(form);
-    const validAccounts = accountsCreated.filter((a) => a.email.trim());
     const validOrders = ordersInProgress.filter((o) => o.account.trim());
     const ratingVal = formData.get('rating');
 
@@ -312,9 +251,10 @@ export const ReportEditForm = memo(({ report }: ReportEditFormProps) => {
       pendingOrders: Number(formData.get('pendingOrders')),
       availableBalance: Number(formData.get('availableBalance')),
       pendingBalance: Number(formData.get('pendingBalance')),
-      rankingPage: formData.get('rankingPage') ? Number(formData.get('rankingPage')) : null,
+      rankingPage: Number(formData.get('rankingPage')),
+      successRate: Number(formData.get('successRate')),
+      handedOverToUserId: (formData.get('handedOverToUserId') as string) || null,
       notes: (formData.get('notes') as string) || null,
-      accountsCreated: validAccounts.length > 0 ? validAccounts : null,
       rating: ratingVal ? Number(ratingVal) : null,
       ordersInProgress: validOrders.length > 0 ? validOrders : null,
     });
@@ -327,7 +267,7 @@ export const ReportEditForm = memo(({ report }: ReportEditFormProps) => {
     }
 
     setIsSubmitting(false);
-  }, [report.id, accountsCreated, ordersInProgress, router]);
+  }, [report.id, ordersInProgress, router]);
 
   const reportDateStr = useMemo(
     () => new Date(report.reportDate).toLocaleDateString(),
@@ -409,14 +349,15 @@ export const ReportEditForm = memo(({ report }: ReportEditFormProps) => {
           </div>
         </div>
 
-        {/* Optional Metrics */}
+        {/* Metrics */}
         <div className="mb-5 sm:mb-6">
-          <SectionHeader title="Optional Metrics" description="Ranking and rating information" />
+          <SectionHeader title="Metrics" description="Ranking, rating, success rate and handover analyst" />
           <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
             <FormInput
               label="Ranking Page"
               name="rankingPage"
               type="number"
+              required
               min="1"
               defaultValue={report.rankingPage ?? ''}
               placeholder="e.g., 1"
@@ -425,12 +366,53 @@ export const ReportEditForm = memo(({ report }: ReportEditFormProps) => {
               label="Rating"
               name="rating"
               type="number"
+              required
               min="0"
               max="5"
               step="0.01"
               defaultValue={report.rating != null ? toNumber(report.rating) : ''}
               placeholder="e.g., 4.85"
             />
+            <FormInput
+              label="Success Rate (%)"
+              name="successRate"
+              type="number"
+              required
+              min="0"
+              max="100"
+              step="0.01"
+              defaultValue={report.successRate != null ? toNumber(report.successRate) : ''}
+              placeholder="e.g., 95.5"
+            />
+            <div className="space-y-1.5">
+              <label htmlFor="handedOverToUserId" className="block text-xs sm:text-sm font-semibold text-gray-700">
+                Analyst (handover to) <span className="text-red-500 ml-0.5">*</span>
+              </label>
+              <select
+                id="handedOverToUserId"
+                name="handedOverToUserId"
+                required
+                defaultValue={report.handedOverToUserId ?? ''}
+                className="
+                  w-full rounded-lg border border-gray-300
+                  px-3 py-2 sm:py-2.5
+                  text-sm sm:text-base
+                  transition-all duration-200
+                  focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none
+                  hover:border-gray-400
+                  appearance-none bg-[length:16px_16px] bg-[position:right_0.75rem_center] bg-no-repeat
+                  cursor-pointer
+                "
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`
+                }}
+              >
+                <option value="">— Select analyst —</option>
+                {users.map((u) => (
+                  <option key={u.id} value={u.id}>{u.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
@@ -463,38 +445,6 @@ export const ReportEditForm = memo(({ report }: ReportEditFormProps) => {
             className="text-xs sm:text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
           >
             + Add order in progress
-          </button>
-        </div>
-
-        {/* Accounts Created */}
-        <div className="mb-5 sm:mb-6 p-3 sm:p-4 bg-emerald-50/50 rounded-lg border border-emerald-100">
-          <SectionHeader 
-            title="Accounts Created" 
-            description="New accounts created during this shift"
-          />
-          <div className="space-y-2 sm:space-y-3 mb-3">
-            {accountsCreated.length === 0 ? (
-              <p className="text-xs sm:text-sm text-gray-500 text-center py-3">
-                No accounts created
-              </p>
-            ) : (
-              accountsCreated.map((account, i) => (
-                <AccountRow
-                  key={i}
-                  account={account}
-                  index={i}
-                  onUpdate={updateAccountRow}
-                  onRemove={removeAccountRow}
-                />
-              ))
-            )}
-          </div>
-          <button
-            type="button"
-            onClick={addAccountRow}
-            className="text-xs sm:text-sm font-medium text-emerald-600 hover:text-emerald-800 transition-colors"
-          >
-            + Add account
           </button>
         </div>
 
