@@ -1,1 +1,22 @@
-{}
+{
+  "/_not-found": "app/_not-found.js",
+  "/api/finances/expenditures/route": "app/api/finances/expenditures/route.js",
+  "/api/finances/payout-details/route": "app/api/finances/payout-details/route.js",
+  "/api/finances/withdraws/route": "app/api/finances/withdraws/route.js",
+  "/api/cron/check-missing-reports/route": "app/api/cron/check-missing-reports/route.js",
+  "/page": "app/page.js",
+  "/(auth)/sign-up/[[...sign-up]]/page": "app/(auth)/sign-up/[[...sign-up]]/page.js",
+  "/(auth)/sign-in/[[...sign-in]]/page": "app/(auth)/sign-in/[[...sign-in]]/page.js",
+  "/(dashboard)/accounts/[id]/page": "app/(dashboard)/accounts/[id]/page.js",
+  "/(dashboard)/accounts/[id]/edit/page": "app/(dashboard)/accounts/[id]/edit/page.js",
+  "/(dashboard)/accounts/[id]/reports/[reportId]/edit/page": "app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page.js",
+  "/(dashboard)/reports/[accountId]/page": "app/(dashboard)/reports/[accountId]/page.js",
+  "/(dashboard)/finances/page": "app/(dashboard)/finances/page.js",
+  "/(dashboard)/reports/page": "app/(dashboard)/reports/page.js",
+  "/(dashboard)/analytics/page": "app/(dashboard)/analytics/page.js",
+  "/(dashboard)/accounts/new/page": "app/(dashboard)/accounts/new/page.js",
+  "/(dashboard)/summary/page": "app/(dashboard)/summary/page.js",
+  "/(dashboard)/reports/history/page": "app/(dashboard)/reports/history/page.js",
+  "/(dashboard)/accounts/page": "app/(dashboard)/accounts/page.js",
+  "/(dashboard)/dashboard/page": "app/(dashboard)/dashboard/page.js"
+}

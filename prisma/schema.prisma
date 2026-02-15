@@ -39,6 +39,23 @@ enum Shift {
   PM
 }
 
+enum ExpenditureType {
+  internet
+  rent
+  proxy
+  electricity
+  water
+  meals
+  office_furniture
+  electronics
+}
+
+enum PaymentGateway {
+  bank
+  paypal
+  payoneer
+}
+
 enum UserRole {
   admin
   operator
@@ -79,10 +96,52 @@ model Account {
   createdBy        User?         @relation(fields: [createdByUserId], references: [id])
   gigs             Gig[]
   shiftReports     ShiftReport[]
+  withdraws        Withdraw[]
+  payoutDetail     PayoutDetail?
   
   @@unique([platform, email])
   @@index([status])
   @@index([createdByUserId])
+}
+
+model Withdraw {
+  id            String   @id @default(cuid())
+  accountId     String
+  amount        Decimal  @db.Decimal(10, 2)
+  withdrawDate  DateTime @db.Date
+  paymentMeans  String
+  notes         String?  @db.Text
+  createdAt     DateTime @default(now())
+  
+  account       Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  
+  @@index([accountId])
+  @@index([withdrawDate])
+}
+
+model Expenditure {
+  id               String         @id @default(cuid())
+  itemName         String
+  typeOfExpenditure ExpenditureType
+  cost             Decimal        @db.Decimal(10, 2)
+  transactionId    String?
+  createdAt        DateTime       @default(now())
+  
+  @@index([typeOfExpenditure])
+  @@index([createdAt])
+}
+
+model PayoutDetail {
+  id              String         @id @default(cuid())
+  accountId       String         @unique
+  paymentGateway  PaymentGateway
+  mobileNumber    String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  account         Account        @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  
+  @@index([accountId])
 }
 
 model Gig {

@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import { getMissingReportsToday } from '@/lib/queries/reports';
 import { getDashboardStats, getMonthlyTrends, getITSupportAnalystLeaderboard, getNewlyCreatedAccountsCount } from '@/lib/queries/dashboard';
+import { getTotalAvailableBalance } from '@/lib/queries/finances';
 import { getTopPerformingAccounts } from '@/lib/queries/accounts';
 import { TopPerformingAccountsCard } from '@/components/dashboard/top-performing-accounts-card';
 import { AlertButton } from '@/components/alert-button';
@@ -97,16 +98,19 @@ export default async function DashboardPage() {
 
   let topAccounts: Awaited<ReturnType<typeof getTopPerformingAccounts>> = [];
   let newAccountsCount = 0;
+  let totalAvailableBalance = 0;
   try {
-    const [missing, s, trends, lb, top, newCount] = await Promise.all([
+    const [missing, s, trends, lb, top, newCount, totalAvail] = await Promise.all([
       getMissingReportsToday(),
       getDashboardStats(),
       getMonthlyTrends(12),
       getITSupportAnalystLeaderboard(),
       getTopPerformingAccounts(),
       getNewlyCreatedAccountsCount(),
+      getTotalAvailableBalance(),
     ]);
     newAccountsCount = newCount;
+    totalAvailableBalance = totalAvail;
     missingReports = missing;
     stats = s;
     monthlyTrends = trends;
@@ -213,6 +217,15 @@ export default async function DashboardPage() {
         <Suspense fallback={<StatsSkeleton />}>
           <div className="grid gap-3 grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
             <AccountHealthCard 
+              label="Total Accounts" 
+              value={totalAccounts}
+              icon={
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              }
+            />
+            <AccountHealthCard 
               label="Newly Created (7 days)" 
               value={newAccountsCount}
               icon={
@@ -268,6 +281,21 @@ export default async function DashboardPage() {
                 </svg>
               }
             />
+            <Link
+              href="/finances"
+              prefetch
+              className="rounded-lg border border-emerald-200 bg-emerald-50/50 p-3 transition-all hover:shadow-md hover:border-emerald-300 sm:p-4 md:p-5"
+            >
+              <div className="flex items-start justify-between gap-2 mb-2 sm:mb-3">
+                <div className="text-[11px] sm:text-xs md:text-sm uppercase tracking-wide text-gray-600 font-medium">
+                  Total Available (processed out)
+                </div>
+              </div>
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold tabular-nums text-emerald-900">
+                ${totalAvailableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+              <div className="mt-2 text-xs font-medium text-emerald-700">View all →</div>
+            </Link>
           </div>
         </Suspense>
       </section>

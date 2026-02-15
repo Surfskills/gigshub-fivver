@@ -36,6 +36,7 @@ export function DashboardLayoutClient({ children, user }: DashboardLayoutClientP
     { href: '/dashboard', label: 'Dashboard', icon: '📊' },
     { href: '/accounts', label: 'Accounts', icon: '👥' },
     { href: '/reports', label: 'Reports', icon: '📝' },
+    { href: '/finances', label: 'Finances', icon: '💰' },
     { href: '/analytics', label: 'Analytics', icon: '📈' },
   ];
 
