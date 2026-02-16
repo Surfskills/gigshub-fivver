@@ -153,7 +153,7 @@ Choose one:
 Edit `src/lib/email/send.ts`:
 
 ```typescript
-from: 'Gigs-Hub (Fivver)<alerts@yourdomain.com>', // Change to your domain
+from: 'Mini Gigs Hub (Fivver)<alerts@yourdomain.com>', // Change to your domain
 ```
 
 ---

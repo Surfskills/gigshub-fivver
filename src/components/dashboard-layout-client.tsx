@@ -47,8 +47,8 @@ export function DashboardLayoutClient({ children, user }: DashboardLayoutClientP
           <div className="flex h-14 items-center justify-between sm:h-16">
             <div className="flex items-center gap-6 lg:gap-8">
               <Link href="/dashboard" prefetch className="flex-shrink-0 text-lg font-bold text-gray-900 transition-opacity hover:opacity-80 sm:text-xl">
-                <span className="hidden sm:inline">Mini Gigs-Hub </span>
-                <span className="sm:hidden">Gigs-Hub</span>
+                <span className="hidden sm:inline">Mini Gigs Hub</span>
+                <span className="sm:hidden">Mini Gigs Hub</span>
               </Link>
               <div className="hidden items-center gap-1 md:flex lg:gap-2">
                 {navLinks.map((link) => (

@@ -41,7 +41,7 @@ export async function sendMissingReportsAlert(
     const transporter = getTransporter();
 
     const info = await transporter.sendMail({
-      from: `"Gigs-Hub Alerts" <${SMTP_USER}>`,
+      from: `"Mini Gigs Hub Alerts" <${SMTP_USER}>`,
       to: ALERT_EMAIL_TO,
       subject: `⚠️ Missing Shift Reports - ${date}`,
       html,
