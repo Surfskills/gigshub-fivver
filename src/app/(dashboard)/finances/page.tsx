@@ -40,24 +40,32 @@ export default async function FinancesPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold text-gray-900">Financial Records</h1>
-        <p className="mt-1 text-gray-600">
-          Account balances and withdrawal history ·{' '}
-          <time dateTime={new Date().toISOString()}>
-            {format(new Date(), 'EEEE, MMMM d, yyyy')}
-          </time>
-        </p>
-      </header>
+    <div className="min-h-screen bg-gray-50/50">
+      <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
+        <header className="mb-6 sm:mb-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 sm:text-2xl lg:text-3xl">
+                Financial Records
+              </h1>
+              <p className="mt-1 text-sm text-gray-600 sm:mt-2 sm:text-base">
+                Account balances, withdrawals, expenditures, and payout details ·{' '}
+                <time dateTime={new Date().toISOString()}>
+                  {format(new Date(), 'EEEE, MMMM d, yyyy')}
+                </time>
+              </p>
+            </div>
+          </div>
+        </header>
 
-      <FinancesPageTabs
+        <FinancesPageTabs
         balancesData={balancesData}
         withdraws={withdraws}
         expenditures={expendituresData}
         payoutDetails={payoutDetailsData}
         accountOptions={accountOptions}
       />
+      </div>
     </div>
   );
 }

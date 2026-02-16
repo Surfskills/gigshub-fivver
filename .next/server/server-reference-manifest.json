@@ -1,1 +1,156 @@
-{"node":{"aa885c1aa6dad886b7a22c9b73926f879311ab22":{"workers":{"app/(dashboard)/accounts/[id]/page":57647},"layer":{"app/(dashboard)/accounts/[id]/page":"rsc"}},"46d05edbb343ea85993b740b2261b48c412e57f2":{"workers":{"app/(dashboard)/accounts/[id]/page":57647},"layer":{"app/(dashboard)/accounts/[id]/page":"rsc"}},"e31bd53d8a15006bbd13ad1b6fd01dd7977c5ef7":{"workers":{"app/(dashboard)/accounts/[id]/page":57647},"layer":{"app/(dashboard)/accounts/[id]/page":"rsc"}},"f8b6d90b8e0f815742bc8ce6c3527f9f66ed6fd6":{"workers":{"app/(dashboard)/accounts/[id]/page":57647},"layer":{"app/(dashboard)/accounts/[id]/page":"rsc"}},"64a3fd8863f22fffe28b08c9b57636d7b3e5dd77":{"workers":{"app/(dashboard)/accounts/[id]/edit/page":31242},"layer":{"app/(dashboard)/accounts/[id]/edit/page":"rsc"}},"1ad6d32a3053266cfdadf265930f6ffd223a8ace":{"workers":{"app/(dashboard)/accounts/[id]/edit/page":31242,"app/(dashboard)/accounts/new/page":59614,"app/(dashboard)/reports/page":96863},"layer":{"app/(dashboard)/accounts/[id]/edit/page":"rsc","app/(dashboard)/accounts/new/page":"rsc","app/(dashboard)/reports/page":"action-browser"}},"4cdc6ed9b74f7c4d92a28683da3475316ed14117":{"workers":{"app/(dashboard)/accounts/[id]/edit/page":31242,"app/(dashboard)/accounts/new/page":59614,"app/(dashboard)/reports/page":96863},"layer":{"app/(dashboard)/accounts/[id]/edit/page":"rsc","app/(dashboard)/accounts/new/page":"rsc","app/(dashboard)/reports/page":"action-browser"}},"6f1222f5846ec3c171d9da92616ec81ceca6e695":{"workers":{"app/(dashboard)/accounts/[id]/edit/page":31242,"app/(dashboard)/accounts/new/page":59614,"app/(dashboard)/reports/page":96863},"layer":{"app/(dashboard)/accounts/[id]/edit/page":"rsc","app/(dashboard)/accounts/new/page":"rsc","app/(dashboard)/reports/page":"action-browser"}},"c540aaadc024b175757ed2639841148d74326850":{"workers":{"app/(dashboard)/accounts/[id]/edit/page":31242,"app/(dashboard)/accounts/new/page":59614,"app/(dashboard)/reports/page":96863},"layer":{"app/(dashboard)/accounts/[id]/edit/page":"rsc","app/(dashboard)/accounts/new/page":"rsc","app/(dashboard)/reports/page":"action-browser"}},"f625f7da25422bd8d899571de88ff928161de0c2":{"workers":{"app/(dashboard)/accounts/[id]/edit/page":31242,"app/(dashboard)/accounts/new/page":59614,"app/(dashboard)/reports/page":96863},"layer":{"app/(dashboard)/accounts/[id]/edit/page":"rsc","app/(dashboard)/accounts/new/page":"rsc","app/(dashboard)/reports/page":"action-browser"}},"63760d44cb2448611734827bf838807aecabebdf":{"workers":{"app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page":97185,"app/(dashboard)/reports/[accountId]/page":50422},"layer":{"app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page":"rsc","app/(dashboard)/reports/[accountId]/page":"action-browser"}},"6b619e440f3f87721a1994b15d0ee810206b3a5d":{"workers":{"app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page":97185,"app/(dashboard)/reports/[accountId]/page":50422},"layer":{"app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page":"rsc","app/(dashboard)/reports/[accountId]/page":"action-browser"}},"b5550877ae1d745d37e6db134f98e2fd5346c4da":{"workers":{"app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page":97185,"app/(dashboard)/reports/[accountId]/page":50422},"layer":{"app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page":"rsc","app/(dashboard)/reports/[accountId]/page":"action-browser"}},"fb781894b8bac6f918891625724f7708a9f7b96b":{"workers":{"app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page":97185,"app/(dashboard)/reports/[accountId]/page":50422},"layer":{"app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page":"rsc","app/(dashboard)/reports/[accountId]/page":"action-browser"}},"7aa8c483f4fdc86d90e15afa2891bd027a711b72":{"workers":{"app/(dashboard)/accounts/new/page":59614},"layer":{"app/(dashboard)/accounts/new/page":"rsc"}},"016b125e3c9141ee7520a5d6601759e458e85013":{"workers":{"app/_not-found":96637,"app/page":96637,"app/(auth)/sign-up/[[...sign-up]]/page":96637,"app/(auth)/sign-in/[[...sign-in]]/page":96637,"app/(dashboard)/accounts/[id]/page":96637,"app/(dashboard)/accounts/[id]/edit/page":96637,"app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page":96637,"app/(dashboard)/reports/[accountId]/page":50422,"app/(dashboard)/finances/page":96637,"app/(dashboard)/reports/page":96863,"app/(dashboard)/analytics/page":96637,"app/(dashboard)/accounts/new/page":96637,"app/(dashboard)/summary/page":96637,"app/(dashboard)/reports/history/page":96637,"app/(dashboard)/accounts/page":14700,"app/(dashboard)/dashboard/page":53597},"layer":{"app/_not-found":"action-browser","app/page":"action-browser","app/(auth)/sign-up/[[...sign-up]]/page":"action-browser","app/(auth)/sign-in/[[...sign-in]]/page":"action-browser","app/(dashboard)/accounts/[id]/page":"action-browser","app/(dashboard)/accounts/[id]/edit/page":"action-browser","app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page":"action-browser","app/(dashboard)/reports/[accountId]/page":"action-browser","app/(dashboard)/finances/page":"action-browser","app/(dashboard)/reports/page":"action-browser","app/(dashboard)/analytics/page":"action-browser","app/(dashboard)/accounts/new/page":"action-browser","app/(dashboard)/summary/page":"action-browser","app/(dashboard)/reports/history/page":"action-browser","app/(dashboard)/accounts/page":"action-browser","app/(dashboard)/dashboard/page":"action-browser"}},"0762f7e3d09775575f80a7167bffe3ae57ac7160":{"workers":{"app/(dashboard)/accounts/page":14700},"layer":{"app/(dashboard)/accounts/page":"action-browser"}},"13b3476863b33bf29cbb568116d3601f3b6d460b":{"workers":{"app/(dashboard)/accounts/page":14700},"layer":{"app/(dashboard)/accounts/page":"action-browser"}},"dd4197accd8db05c53a6253bc4be91fc5cd4c057":{"workers":{"app/(dashboard)/dashboard/page":53597},"layer":{"app/(dashboard)/dashboard/page":"action-browser"}}},"edge":{},"encryptionKey":"lNj9M88jz4eaA1a4ElMoX+eYKO3L+8EAQqTGPhP7LQw="}
+{
+  "node": {
+    "1ad6d32a3053266cfdadf265930f6ffd223a8ace": {
+      "workers": {
+        "app/(dashboard)/reports/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Faccounts.ts%22%2C%5B%22deleteAccount%22%2C%22reportAccountsCreated%22%2C%22getAccountsCreatedList%22%2C%22createAccount%22%2C%22updateAccount%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/(dashboard)/reports/page": "action-browser"
+      }
+    },
+    "4cdc6ed9b74f7c4d92a28683da3475316ed14117": {
+      "workers": {
+        "app/(dashboard)/reports/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Faccounts.ts%22%2C%5B%22deleteAccount%22%2C%22reportAccountsCreated%22%2C%22getAccountsCreatedList%22%2C%22createAccount%22%2C%22updateAccount%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/(dashboard)/reports/page": "action-browser"
+      }
+    },
+    "6f1222f5846ec3c171d9da92616ec81ceca6e695": {
+      "workers": {
+        "app/(dashboard)/reports/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Faccounts.ts%22%2C%5B%22deleteAccount%22%2C%22reportAccountsCreated%22%2C%22getAccountsCreatedList%22%2C%22createAccount%22%2C%22updateAccount%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/(dashboard)/reports/page": "action-browser"
+      }
+    },
+    "c540aaadc024b175757ed2639841148d74326850": {
+      "workers": {
+        "app/(dashboard)/reports/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Faccounts.ts%22%2C%5B%22deleteAccount%22%2C%22reportAccountsCreated%22%2C%22getAccountsCreatedList%22%2C%22createAccount%22%2C%22updateAccount%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/(dashboard)/reports/page": "action-browser"
+      }
+    },
+    "f625f7da25422bd8d899571de88ff928161de0c2": {
+      "workers": {
+        "app/(dashboard)/reports/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Faccounts.ts%22%2C%5B%22deleteAccount%22%2C%22reportAccountsCreated%22%2C%22getAccountsCreatedList%22%2C%22createAccount%22%2C%22updateAccount%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/(dashboard)/reports/page": "action-browser"
+      }
+    },
+    "016b125e3c9141ee7520a5d6601759e458e85013": {
+      "workers": {
+        "app/(dashboard)/reports/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Faccounts.ts%22%2C%5B%22deleteAccount%22%2C%22reportAccountsCreated%22%2C%22getAccountsCreatedList%22%2C%22createAccount%22%2C%22updateAccount%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!",
+        "app/not-found": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!",
+        "app/(dashboard)/accounts/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Fexports.ts%22%2C%5B%22exportReportsToCSV%22%2C%22exportAccountsToCSV%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!",
+        "app/(dashboard)/dashboard/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Falerts.ts%22%2C%5B%22sendMissingReportsEmail%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!",
+        "app/(dashboard)/finances/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!",
+        "app/(dashboard)/reports/history/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!",
+        "app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!",
+        "app/(dashboard)/accounts/[id]/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/(dashboard)/reports/page": "action-browser",
+        "app/not-found": "action-browser",
+        "app/(dashboard)/accounts/page": "action-browser",
+        "app/(dashboard)/dashboard/page": "action-browser",
+        "app/(dashboard)/finances/page": "action-browser",
+        "app/(dashboard)/reports/history/page": "action-browser",
+        "app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page": "action-browser",
+        "app/(dashboard)/accounts/[id]/page": "action-browser"
+      }
+    },
+    "0762f7e3d09775575f80a7167bffe3ae57ac7160": {
+      "workers": {
+        "app/(dashboard)/accounts/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Fexports.ts%22%2C%5B%22exportReportsToCSV%22%2C%22exportAccountsToCSV%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/(dashboard)/accounts/page": "action-browser"
+      }
+    },
+    "13b3476863b33bf29cbb568116d3601f3b6d460b": {
+      "workers": {
+        "app/(dashboard)/accounts/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Fexports.ts%22%2C%5B%22exportReportsToCSV%22%2C%22exportAccountsToCSV%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/(dashboard)/accounts/page": "action-browser"
+      }
+    },
+    "dd4197accd8db05c53a6253bc4be91fc5cd4c057": {
+      "workers": {
+        "app/(dashboard)/dashboard/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Falerts.ts%22%2C%5B%22sendMissingReportsEmail%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fnode_modules%2F%40clerk%2Fnextjs%2Fdist%2Fesm%2Fapp-router%2Fserver-actions.js%22%2C%5B%22invalidateCacheAction%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/(dashboard)/dashboard/page": "action-browser"
+      }
+    },
+    "63760d44cb2448611734827bf838807aecabebdf": {
+      "workers": {
+        "app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Freports.ts%22%2C%5B%22getReportById%22%2C%22getAccountReportsForDate%22%2C%22updateShiftReport%22%2C%22submitShiftReport%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page": "rsc"
+      }
+    },
+    "6b619e440f3f87721a1994b15d0ee810206b3a5d": {
+      "workers": {
+        "app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Freports.ts%22%2C%5B%22getReportById%22%2C%22getAccountReportsForDate%22%2C%22updateShiftReport%22%2C%22submitShiftReport%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page": "rsc"
+      }
+    },
+    "b5550877ae1d745d37e6db134f98e2fd5346c4da": {
+      "workers": {
+        "app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Freports.ts%22%2C%5B%22getReportById%22%2C%22getAccountReportsForDate%22%2C%22updateShiftReport%22%2C%22submitShiftReport%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page": "rsc"
+      }
+    },
+    "fb781894b8bac6f918891625724f7708a9f7b96b": {
+      "workers": {
+        "app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Freports.ts%22%2C%5B%22getReportById%22%2C%22getAccountReportsForDate%22%2C%22updateShiftReport%22%2C%22submitShiftReport%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page": "rsc"
+      }
+    },
+    "aa885c1aa6dad886b7a22c9b73926f879311ab22": {
+      "workers": {
+        "app/(dashboard)/accounts/[id]/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Fapp%2F(dashboard)%2Faccounts%2F%5Bid%5D%2Fpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Fgigs.ts%22%2C%5B%22createGig%22%2C%22deleteGig%22%2C%22updateGig%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/(dashboard)/accounts/[id]/page": "rsc"
+      }
+    },
+    "46d05edbb343ea85993b740b2261b48c412e57f2": {
+      "workers": {
+        "app/(dashboard)/accounts/[id]/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Fapp%2F(dashboard)%2Faccounts%2F%5Bid%5D%2Fpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Fgigs.ts%22%2C%5B%22createGig%22%2C%22deleteGig%22%2C%22updateGig%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/(dashboard)/accounts/[id]/page": "rsc"
+      }
+    },
+    "e31bd53d8a15006bbd13ad1b6fd01dd7977c5ef7": {
+      "workers": {
+        "app/(dashboard)/accounts/[id]/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Fapp%2F(dashboard)%2Faccounts%2F%5Bid%5D%2Fpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Fgigs.ts%22%2C%5B%22createGig%22%2C%22deleteGig%22%2C%22updateGig%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/(dashboard)/accounts/[id]/page": "rsc"
+      }
+    },
+    "f8b6d90b8e0f815742bc8ce6c3527f9f66ed6fd6": {
+      "workers": {
+        "app/(dashboard)/accounts/[id]/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Fapp%2F(dashboard)%2Faccounts%2F%5Bid%5D%2Fpage.tsx%22%2C%5B%22%24%24ACTION_0%22%5D%5D%2C%5B%22%2FUsers%2Ffredosege%2FDesktop%2FReact_projects%2Fgigshub-fivver%2Fsrc%2Flib%2Factions%2Fgigs.ts%22%2C%5B%22createGig%22%2C%22deleteGig%22%2C%22updateGig%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/(dashboard)/accounts/[id]/page": "rsc"
+      }
+    }
+  },
+  "edge": {},
+  "encryptionKey": "sj8m3ePBVwzuMrpdp59U+NA3jZbllOmC0hzM6NebXrg="
+}

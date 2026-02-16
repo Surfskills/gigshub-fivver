@@ -36,12 +36,13 @@ const EXPENDITURE_TYPE_LABELS: Record<string, string> = {
 };
 
 function formatCurrency(n: number) {
+  const rounded = Math.round(n * 100) / 100;
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(n);
+  }).format(rounded);
 }
 
 type TabType = 'balances' | 'withdraws' | 'expenditures' | 'payoutDetails';
@@ -66,7 +67,7 @@ function Pagination({
 }) {
   if (totalPages <= 1) return null;
   return (
-    <div className="flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6">
+    <div className="flex items-center justify-between border-t border-gray-200 px-3 py-2.5 sm:px-6 sm:py-3">
       <div className="flex flex-1 justify-between sm:hidden">
         <button
           type="button"
@@ -120,8 +121,8 @@ export function FinancesPageTabs({ balancesData, withdraws, expenditures, payout
   const [expendituresPage, setExpendituresPage] = useState(1);
   const [payoutDetailsPage, setPayoutDetailsPage] = useState(1);
   const [payoutSearch, setPayoutSearch] = useState('');
-  const totalWithdrawn = withdraws.reduce((s, w) => s + w.amount, 0);
-  const totalExpenditure = expenditures.reduce((s, e) => s + e.cost, 0);
+  const totalWithdrawn = Math.round(withdraws.reduce((s, w) => s + w.amount, 0) * 100) / 100;
+  const totalExpenditure = Math.round(expenditures.reduce((s, e) => s + e.cost, 0) * 100) / 100;
 
   const flatAccounts = useMemo(
     () => PLATFORM_ORDER.flatMap((p) => balancesData.byPlatform[p] ?? []),
@@ -186,13 +187,13 @@ export function FinancesPageTabs({ balancesData, withdraws, expenditures, payout
   };
 
   return (
-    <div className="space-y-6">
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex gap-6" aria-label="Finances tabs">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="border-b border-gray-200 -mx-4 overflow-x-auto sm:mx-0 sm:overflow-visible">
+        <nav className="-mb-px flex min-w-max gap-2 px-4 sm:min-w-0 sm:flex-wrap sm:gap-6 sm:px-0" aria-label="Finances tabs">
           <button
             type="button"
             onClick={() => handleTabChange('balances')}
-            className={`border-b-2 py-3 text-sm font-medium ${
+            className={`whitespace-nowrap border-b-2 py-2.5 text-xs font-medium sm:py-3 sm:text-sm ${
               activeTab === 'balances'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -203,7 +204,7 @@ export function FinancesPageTabs({ balancesData, withdraws, expenditures, payout
           <button
             type="button"
             onClick={() => handleTabChange('withdraws')}
-            className={`border-b-2 py-3 text-sm font-medium ${
+            className={`whitespace-nowrap border-b-2 py-2.5 text-xs font-medium sm:py-3 sm:text-sm ${
               activeTab === 'withdraws'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -214,7 +215,7 @@ export function FinancesPageTabs({ balancesData, withdraws, expenditures, payout
           <button
             type="button"
             onClick={() => handleTabChange('expenditures')}
-            className={`border-b-2 py-3 text-sm font-medium ${
+            className={`whitespace-nowrap border-b-2 py-2.5 text-xs font-medium sm:py-3 sm:text-sm ${
               activeTab === 'expenditures'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -225,7 +226,7 @@ export function FinancesPageTabs({ balancesData, withdraws, expenditures, payout
           <button
             type="button"
             onClick={() => handleTabChange('payoutDetails')}
-            className={`border-b-2 py-3 text-sm font-medium ${
+            className={`whitespace-nowrap border-b-2 py-2.5 text-xs font-medium sm:py-3 sm:text-sm ${
               activeTab === 'payoutDetails'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -238,29 +239,77 @@ export function FinancesPageTabs({ balancesData, withdraws, expenditures, payout
 
       {activeTab === 'balances' && (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-3 grid-cols-2 sm:gap-4">
             <div className="rounded-lg border border-emerald-200 bg-emerald-50/50 p-6">
-              <div className="text-sm font-medium text-emerald-800">Total Available Balance</div>
-              <div className="mt-1 text-2xl font-bold text-emerald-900">
+              <div className="text-xs font-medium text-emerald-800 sm:text-sm">Total Available Balance</div>
+              <div className="mt-1 text-xl font-bold text-emerald-900 sm:text-2xl">
                 {formatCurrency(balancesData.totalAvailable)}
               </div>
             </div>
             <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-6">
-              <div className="text-sm font-medium text-amber-800">Total Pending Balance</div>
-              <div className="mt-1 text-2xl font-bold text-amber-900">
+              <div className="text-xs font-medium text-amber-800 sm:text-sm">Total Pending Balance</div>
+              <div className="mt-1 text-xl font-bold text-amber-900 sm:text-2xl">
                 {formatCurrency(balancesData.totalPending)}
               </div>
             </div>
           </div>
 
-          <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden sm:rounded-xl">
             <div className="border-b border-gray-200 px-4 py-4 sm:px-6">
-              <h2 className="text-lg font-semibold text-gray-900">Balances by Account</h2>
-              <p className="mt-1 text-sm text-gray-600">
+              <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Balances by Account</h2>
+              <p className="mt-1 text-xs text-gray-600 sm:text-sm">
                 Available and pending balance per account (from most recent report)
               </p>
             </div>
-            <div className="overflow-x-auto">
+
+            {/* Mobile: Stacked cards */}
+            <div className="md:hidden">
+              {paginatedAccounts.length === 0 ? (
+                <div className="p-8 text-center text-sm text-gray-500">No accounts with balance data.</div>
+              ) : (
+                <div className="divide-y divide-gray-200">
+                  {paginatedAccounts.map((acc) => (
+                    <Link
+                      key={acc.id}
+                      href={`/accounts/${acc.id}`}
+                      className="block p-4 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-blue-600 truncate">{acc.username}</p>
+                          <p className="text-xs text-gray-500 truncate">{acc.email}</p>
+                          <span className="mt-1 inline-block text-xs text-gray-600">
+                            {PLATFORM_LABELS[acc.platform] ?? acc.platform}
+                          </span>
+                        </div>
+                        <div className="text-right flex-shrink-0 ml-3">
+                          <p className="text-sm font-semibold text-emerald-700">
+                            {formatCurrency(acc.availableBalance)}
+                          </p>
+                          <p className="text-xs text-amber-700">
+                            {formatCurrency(acc.pendingBalance)} pending
+                          </p>
+                          {acc.lastReportDate && (
+                            <p className="text-xs text-gray-500 mt-0.5">
+                              {format(acc.lastReportDate, 'MMM d')}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+              <div className="border-t border-gray-200 bg-gray-50 px-4 py-3">
+                <div className="flex justify-between text-sm font-semibold">
+                  <span className="text-gray-900">Total</span>
+                  <span className="text-emerald-800">{formatCurrency(balancesData.totalAvailable)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop: Table */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -346,17 +395,59 @@ export function FinancesPageTabs({ balancesData, withdraws, expenditures, payout
       {activeTab === 'withdraws' && (
         <>
           <WithdrawForm accounts={accountOptions} />
-          <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden sm:rounded-xl">
             <div className="border-b border-gray-200 px-4 py-4 sm:px-6">
-              <h2 className="text-lg font-semibold text-gray-900">Withdrawals</h2>
-              <p className="mt-1 text-sm text-gray-600">
+              <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Withdrawals</h2>
+              <p className="mt-1 text-xs text-gray-600 sm:text-sm">
                 Withdraw history by account, amount, date, and payment means
               </p>
               <div className="mt-3 text-sm font-medium text-gray-700">
                 Total withdrawn: {formatCurrency(totalWithdrawn)}
               </div>
             </div>
-            <div className="overflow-x-auto">
+
+            {/* Mobile: Stacked cards */}
+            <div className="md:hidden">
+              {paginatedWithdraws.length === 0 ? (
+                <div className="p-8 text-center text-sm text-gray-500">No withdrawals recorded yet.</div>
+              ) : (
+                <div className="divide-y divide-gray-200">
+                  {paginatedWithdraws.map((w) => (
+                    <Link
+                      key={w.id}
+                      href={`/accounts/${w.accountId}`}
+                      className="block p-4 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-blue-600 truncate">{w.username}</p>
+                          <p className="text-xs text-gray-500 truncate">{w.email}</p>
+                          <p className="text-xs text-gray-600 mt-1">
+                            {format(w.withdrawDate, 'MMM d, yyyy')} · {w.paymentMeans}
+                          </p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-sm font-semibold text-gray-900">
+                            {formatCurrency(w.amount)}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+              {withdraws.length > 0 && (
+                <div className="border-t border-gray-200 bg-gray-50 px-4 py-3">
+                  <div className="flex justify-between text-sm font-semibold">
+                    <span className="text-gray-900">Total</span>
+                    <span>{formatCurrency(totalWithdrawn)}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Desktop: Table */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -433,17 +524,57 @@ export function FinancesPageTabs({ balancesData, withdraws, expenditures, payout
       {activeTab === 'expenditures' && (
         <>
           <ExpenditureForm />
-          <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden sm:rounded-xl">
             <div className="border-b border-gray-200 px-4 py-4 sm:px-6">
-              <h2 className="text-lg font-semibold text-gray-900">Expenditures</h2>
-              <p className="mt-1 text-sm text-gray-600">
+              <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Expenditures</h2>
+              <p className="mt-1 text-xs text-gray-600 sm:text-sm">
                 Item name, type, cost, and transaction ID
               </p>
               <div className="mt-3 text-sm font-medium text-gray-700">
                 Total expenditure: {formatCurrency(totalExpenditure)}
               </div>
             </div>
-            <div className="overflow-x-auto">
+
+            {/* Mobile: Stacked cards */}
+            <div className="md:hidden">
+              {paginatedExpenditures.length === 0 ? (
+                <div className="p-8 text-center text-sm text-gray-500">No expenditures recorded yet.</div>
+              ) : (
+                <div className="divide-y divide-gray-200">
+                  {paginatedExpenditures.map((e) => (
+                    <div key={e.id} className="p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-gray-900 truncate">{e.itemName}</p>
+                          <p className="text-xs text-gray-600">
+                            {EXPENDITURE_TYPE_LABELS[e.typeOfExpenditure] ?? e.typeOfExpenditure}
+                          </p>
+                          {e.transactionId && (
+                            <p className="text-xs text-gray-500 mt-0.5 truncate">{e.transactionId}</p>
+                          )}
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-sm font-semibold text-gray-900">
+                            {formatCurrency(e.cost)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {expenditures.length > 0 && (
+                <div className="border-t border-gray-200 bg-gray-50 px-4 py-3">
+                  <div className="flex justify-between text-sm font-semibold">
+                    <span className="text-gray-900">Total</span>
+                    <span>{formatCurrency(totalExpenditure)}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Desktop: Table */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -513,10 +644,10 @@ export function FinancesPageTabs({ balancesData, withdraws, expenditures, payout
       {activeTab === 'payoutDetails' && (
         <>
           <PayoutDetailForm accounts={accountOptions} />
-          <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden sm:rounded-xl">
             <div className="border-b border-gray-200 px-4 py-4 sm:px-6">
-              <h2 className="text-lg font-semibold text-gray-900">Payout Details</h2>
-              <p className="mt-1 text-sm text-gray-600">
+              <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Payout Details</h2>
+              <p className="mt-1 text-xs text-gray-600 sm:text-sm">
                 Payment gateway and mobile number per account
               </p>
               <div className="mt-4">
@@ -532,11 +663,52 @@ export function FinancesPageTabs({ balancesData, withdraws, expenditures, payout
                     setPayoutDetailsPage(1);
                   }}
                   placeholder="Search by email or username..."
-                  className="block w-full max-w-sm rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:max-w-sm"
                 />
               </div>
             </div>
-            <div className="overflow-x-auto">
+
+            {/* Mobile: Stacked cards */}
+            <div className="md:hidden">
+              {paginatedPayoutDetails.length === 0 ? (
+                <div className="p-8 text-center text-sm text-gray-500">
+                  {payoutSearch.trim() ? 'No accounts match your search.' : 'No payout details recorded yet.'}
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-200">
+                  {paginatedPayoutDetails.map((p) => (
+                    <Link
+                      key={p.accountId}
+                      href={`/accounts/${p.accountId}`}
+                      className="block p-4 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-blue-600 truncate">{p.username}</p>
+                          <p className="text-xs text-gray-500 truncate">{p.email}</p>
+                          <p className="text-xs text-gray-600 mt-1">
+                            {PLATFORM_LABELS[p.platform] ?? p.platform}
+                          </p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-sm font-medium text-gray-900">
+                            {p.paymentGateway
+                              ? PAYMENT_GATEWAY_LABELS[p.paymentGateway] ?? p.paymentGateway
+                              : '—'}
+                          </p>
+                          {p.mobileNumber && (
+                            <p className="text-xs text-gray-600 mt-0.5">{p.mobileNumber}</p>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Desktop: Table */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>

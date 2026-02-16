@@ -57,7 +57,7 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
     db.account.findMany({
       include: {
         shiftReports: {
-          orderBy: { reportDate: 'desc' },
+          orderBy: [{ reportDate: 'desc' }, { shift: 'desc' }],
           take: 1,
           select: {
             availableBalance: true,
@@ -153,8 +153,8 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
       last30Days: reportsLast30Days,
     },
     metrics: {
-      totalAvailableBalance: totalAvailable,
-      totalPendingBalance: totalPending,
+      totalAvailableBalance: Math.round(totalAvailable * 100) / 100,
+      totalPendingBalance: Math.round(totalPending * 100) / 100,
       totalOrdersCompleted,
       totalPendingOrders,
       avgRating: ratingCount > 0 ? Math.round((ratingSum / ratingCount) * 100) / 100 : null,
@@ -166,7 +166,7 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
 }
 
 export async function getDashboardStats() {
-  const [totalGigs, totalReports, accountsByPlatform, earnings, accountsWithLatestReport] =
+  const [totalGigs, totalReports, accountsByPlatform, accountsWithLatestReport] =
     await Promise.all([
       db.gig.count(),
       db.shiftReport.count(),
@@ -174,18 +174,15 @@ export async function getDashboardStats() {
         by: ['platform'],
         _count: { id: true },
       }),
-      db.shiftReport.aggregate({
-        _sum: {
-          availableBalance: true,
-          pendingBalance: true,
-        },
-      }),
       db.account.findMany({
-        select: {
+        where: { status: 'active' },
+        include: {
           shiftReports: {
-            orderBy: { reportDate: 'desc' },
+            orderBy: [{ reportDate: 'desc' }, { shift: 'desc' }],
             take: 1,
             select: {
+              availableBalance: true,
+              pendingBalance: true,
               ordersCompleted: true,
               pendingOrders: true,
             },
@@ -194,12 +191,16 @@ export async function getDashboardStats() {
       }),
     ]);
 
-  // Sum orders from latest report per account (avoids double-counting)
+  // Sum from latest report per account (avoids double-counting when accounts have multiple reports)
+  let totalAvailableEarnings = 0;
+  let totalPendingEarnings = 0;
   let totalOrdersCompleted = 0;
   let totalOrdersInProgress = 0;
   for (const a of accountsWithLatestReport) {
     const latest = a.shiftReports[0];
     if (latest) {
+      totalAvailableEarnings += Number(latest.availableBalance);
+      totalPendingEarnings += Number(latest.pendingBalance);
       totalOrdersCompleted += latest.ordersCompleted;
       totalOrdersInProgress += latest.pendingOrders;
     }
@@ -212,8 +213,8 @@ export async function getDashboardStats() {
       platform: p.platform,
       count: p._count.id,
     })),
-    totalAvailableEarnings: Number(earnings._sum.availableBalance || 0),
-    totalPendingEarnings: Number(earnings._sum.pendingBalance || 0),
+    totalAvailableEarnings: Math.round(totalAvailableEarnings * 100) / 100,
+    totalPendingEarnings: Math.round(totalPendingEarnings * 100) / 100,
     totalOrdersCompleted,
     totalOrdersInProgress,
   };
@@ -233,38 +234,29 @@ export async function getMonthlyTrends(months: number = 12) {
     );
     const monthEnd = endOfMonth(monthStart);
 
-    const [reports, accounts] = await Promise.all([
-      db.shiftReport.findMany({
-        where: {
-          reportDate: {
-            gte: monthStart,
-            lte: monthEnd,
-          },
+    // Get latest report per account as of month end (avoids double-counting AM+PM and multiple days)
+    const accounts = await db.account.findMany({
+      where: {
+        createdAt: { lte: monthEnd },
+      },
+      include: {
+        shiftReports: {
+          where: { reportDate: { lte: monthEnd } },
+          orderBy: [{ reportDate: 'desc' }, { shift: 'desc' }],
+          take: 1,
+          select: { availableBalance: true },
         },
-        select: {
-          availableBalance: true,
-        },
-      }),
-      db.account.findMany({
-        where: {
-          createdAt: {
-            lte: monthEnd,
-          },
-        },
-        select: {
-          id: true,
-        },
-      }),
-    ]);
+      },
+    });
 
-    const moneyEarned = reports.reduce(
-      (sum, r) => sum + Number(r.availableBalance),
+    const moneyEarned = accounts.reduce(
+      (sum, a) => sum + (a.shiftReports[0] ? Number(a.shiftReports[0].availableBalance) : 0),
       0
     );
 
     monthsData.push({
       month: format(monthStart, 'MMM yyyy'),
-      moneyEarned,
+      moneyEarned: Math.round(moneyEarned * 100) / 100,
       totalAccounts: accounts.length,
     });
   }

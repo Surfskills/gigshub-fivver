@@ -1,5 +1,9 @@
 import { db } from '@/lib/db';
 
+function roundCurrency(n: number): number {
+  return Math.round(n * 100) / 100;
+}
+
 export type AccountBalance = {
   id: string;
   platform: string;
@@ -23,7 +27,7 @@ export async function getFinancesData(): Promise<FinancesData> {
     where: { status: 'active' },
     include: {
       shiftReports: {
-        orderBy: { reportDate: 'desc' },
+        orderBy: [{ reportDate: 'desc' }, { shift: 'desc' }],
         take: 1,
         select: {
           availableBalance: true,
@@ -65,8 +69,8 @@ export async function getFinancesData(): Promise<FinancesData> {
   return {
     accounts: result,
     byPlatform,
-    totalAvailable,
-    totalPending,
+    totalAvailable: roundCurrency(totalAvailable),
+    totalPending: roundCurrency(totalPending),
   };
 }
 
@@ -169,15 +173,16 @@ export async function getTotalAvailableBalance(): Promise<number> {
     where: { status: 'active' },
     include: {
       shiftReports: {
-        orderBy: { reportDate: 'desc' },
+        orderBy: [{ reportDate: 'desc' }, { shift: 'desc' }],
         take: 1,
         select: { availableBalance: true },
       },
     },
   });
 
-  return accounts.reduce((sum, a) => {
+  const total = accounts.reduce((sum, a) => {
     const latest = a.shiftReports[0];
     return sum + (latest ? Number(latest.availableBalance) : 0);
   }, 0);
+  return roundCurrency(total);
 }

@@ -54,12 +54,12 @@ export function ExpenditureForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-gray-200 bg-gray-50/50 p-4">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-gray-200 bg-gray-50/50 p-3 sm:p-4">
       <h3 className="text-sm font-semibold text-gray-900">Add Expenditure</h3>
       {error && (
         <p className="text-sm text-red-600">{error}</p>
       )}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
         <div>
           <label htmlFor="itemName" className="block text-xs font-medium text-gray-600">
             Item Name
@@ -125,7 +125,7 @@ export function ExpenditureForm() {
       <button
         type="submit"
         disabled={submitting}
-        className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-50"
+        className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-50 sm:w-auto"
       >
         {submitting ? 'Adding…' : 'Add Expenditure'}
       </button>

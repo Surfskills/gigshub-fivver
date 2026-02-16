@@ -8,7 +8,7 @@ export async function getTopPerformingAccounts() {
     where: { status: 'active' },
     include: {
       shiftReports: {
-        orderBy: { reportDate: 'desc' },
+        orderBy: [{ reportDate: 'desc' }, { shift: 'desc' }],
         take: 1,
         select: { rankingPage: true, reportDate: true },
       },
@@ -51,7 +51,7 @@ export async function getAccountsRankedByPage(page = 1, filter?: AccountsFilter)
     include: {
       _count: { select: { gigs: true, shiftReports: true } },
       shiftReports: {
-        orderBy: { reportDate: 'desc' },
+        orderBy: [{ reportDate: 'desc' }, { shift: 'desc' }],
         take: 1,
         select: { rankingPage: true },
       },
