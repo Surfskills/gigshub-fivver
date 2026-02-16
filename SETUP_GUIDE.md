@@ -1,4 +1,4 @@
-# Setup Guide - Freelance Operations Brain
+# Setup Guide - Mini Gigs Hub
 
 Complete step-by-step guide to get your application running.
 

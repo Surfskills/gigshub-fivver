@@ -1,8 +1,1 @@
-{
-  "/not-found": "app/not-found.js",
-  "/(dashboard)/dashboard/page": "app/(dashboard)/dashboard/page.js",
-  "/(dashboard)/accounts/[id]/reports/[reportId]/edit/page": "app/(dashboard)/accounts/[id]/reports/[reportId]/edit/page.js",
-  "/(dashboard)/reports/history/page": "app/(dashboard)/reports/history/page.js",
-  "/(dashboard)/finances/page": "app/(dashboard)/finances/page.js",
-  "/(dashboard)/accounts/[id]/page": "app/(dashboard)/accounts/[id]/page.js"
-}
+{}

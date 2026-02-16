@@ -31,7 +31,7 @@ export function MissingReportsEmail({ missingReports, date }: MissingReportsEmai
 
           <Hr style={hr} />
           <Text style={footer}>
-            This is an automated alert from your Freelance Operations Brain. Please submit the missing reports as soon
+            This is an automated alert from your Mini Gigs Hub. Please submit the missing reports as soon
             as possible.
           </Text>
         </Container>

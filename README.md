@@ -1,4 +1,4 @@
-# Freelance Operations Brain
+# Mini Gigs Hub
 
 A serverless Next.js application for managing multiple freelancing accounts across platforms (Fiverr, Upwork, Direct clients) with shift-based reporting, analytics, and email alerts.
 
@@ -31,7 +31,7 @@ A serverless Next.js application for managing multiple freelancing accounts acro
 ## 📁 Project Structure
 
 ```
-freelance-ops-brain/
+mini-gigs-hub/
 ├── prisma/
 │   └── schema.prisma          # Database models
 ├── src/
@@ -75,7 +75,7 @@ freelance-ops-brain/
 
 ```bash
 git clone <repo-url>
-cd freelance-ops-brain
+cd mini-gigs-hub
 npm install
 ```
 

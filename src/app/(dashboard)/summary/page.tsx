@@ -5,7 +5,7 @@ import { formatAccountLevel } from '@/lib/account-level';
 import type { AccountLevel } from '@prisma/client';
 
 export const metadata = {
-  title: 'Summary Report | Freelance Manager',
+  title: 'Summary Report | Mini Gigs Hub',
   description: 'Business overview and key metrics report.',
 };
 

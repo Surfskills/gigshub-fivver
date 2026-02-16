@@ -134,6 +134,6 @@ export default function NewAccountPage() {
 
 // Metadata for SEO
 export const metadata = {
-  title: 'Create New Account | Freelance Manager',
+  title: 'Create New Account | Mini Gigs Hub',
   description: 'Add a new freelancing platform account to track your gigs, earnings, and performance.',
 };

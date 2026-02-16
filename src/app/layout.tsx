@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Freelance Operations Brain',
+  title: 'Mini Gigs Hub',
   description: 'Operations & Reporting Dashboard for Freelancing Accounts',
   manifest: '/manifest.json',
   icons: {
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Freelance Ops',
+    title: 'Mini Gigs Hub',
   },
   formatDetection: {
     telephone: false,

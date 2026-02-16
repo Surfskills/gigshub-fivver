@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Freelance Operations Brain - Quick Start Script
+# Mini Gigs Hub - Quick Start Script
 # This script helps you get started quickly
 
-echo "🚀 Freelance Operations Brain - Quick Start"
+echo "🚀 Mini Gigs Hub - Quick Start"
 echo "==========================================="
 echo ""
 

@@ -391,7 +391,7 @@ export default async function DashboardPage() {
 
 // Metadata for SEO
 export const metadata = {
-  title: 'Dashboard | Freelance Manager',
+  title: 'Dashboard | Mini Gigs Hub',
   description: 'View your operations dashboard with real-time stats, earnings, and performance metrics across all your freelancing accounts.',
 };
 

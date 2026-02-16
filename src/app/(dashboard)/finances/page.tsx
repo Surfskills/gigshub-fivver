@@ -71,6 +71,6 @@ export default async function FinancesPage() {
 }
 
 export const metadata = {
-  title: 'Financial Records | Freelance Manager',
+  title: 'Financial Records | Mini Gigs Hub',
   description: 'View account balances, available and pending totals across all accounts.',
 };

@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { formatAccountLevel, getAccountLevelStyle } from '@/lib/account-level';
 
 export const metadata = {
-  title: 'Reports History | Freelance Manager',
+  title: 'Reports History | Mini Gigs Hub',
   description: 'View past shift reports.',
 };
 

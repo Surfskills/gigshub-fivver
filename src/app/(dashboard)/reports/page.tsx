@@ -8,7 +8,7 @@ import { REPORT_INTERVAL_HOURS } from '@/lib/queries/reports';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Submit Reports | Freelance Manager',
+  title: 'Submit Reports | Mini Gigs Hub',
   description: 'Submit shift reports for your freelancing accounts.',
 };
 

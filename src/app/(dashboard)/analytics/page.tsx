@@ -258,7 +258,7 @@ export default async function AnalyticsPage({ searchParams }: AnalyticsPageProps
 
 // Metadata for SEO
 export const metadata = {
-  title: 'Analytics Dashboard | Freelance Manager',
+  title: 'Analytics Dashboard | Mini Gigs Hub',
   description: 'Track your freelancing performance with detailed analytics on earnings, ratings, and platform rankings.',
 };
 

@@ -25,7 +25,7 @@ const PLATFORM_OPTIONS: { value: Platform; label: string }[] = [
 
 // Metadata for SEO
 export const metadata = {
-  title: 'Accounts | Freelance Manager',
+  title: 'Accounts | Mini Gigs Hub',
   description: 'Manage all your freelancing platform accounts in one place. Track gigs, earnings, and performance across multiple platforms.',
 };
 
