@@ -8,6 +8,9 @@ const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)',
   '/sign-up(.*)',
   '/api(.*)',
+  '/llms.txt',
+  '/robots.txt',
+  '/sitemap.xml',
 ]);
 
 const clerkHandler = clerkMiddleware(async (auth, req) => {
@@ -20,7 +23,7 @@ const clerkHandler = clerkMiddleware(async (auth, req) => {
 export default async function middleware(req: NextRequest, event: NextFetchEvent) {
   // Bypass Clerk only for static files (Clerk auth() requires middleware to run for pages)
   const path = req.nextUrl.pathname;
-  if (path === '/manifest.json' || path === '/vercel.ico') {
+  if (path === '/manifest.json' || path === '/vercel.ico' || path === '/llms.txt' || path === '/robots.txt' || path === '/sitemap.xml') {
     return NextResponse.next();
   }
   return clerkHandler(req, event);

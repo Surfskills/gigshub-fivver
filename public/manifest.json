@@ -1,7 +1,7 @@
 {
     "name": "Mini Gigs Hub - The Space",
     "short_name": "Mini Gigs Hub",
-    "description": "Internal operations platform for freelance management",
+    "description": "Operations and reporting dashboard for freelancing accounts. Track gigs, shift reports, earnings, and analytics across Fiverr, Upwork, and direct clients.",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#fafafa",
