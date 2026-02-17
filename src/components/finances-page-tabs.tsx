@@ -300,7 +300,7 @@ export function FinancesPageTabs({ balancesData, withdraws, expenditures, payout
         <>
           <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 sm:gap-4">
             <div className="rounded-lg border border-emerald-200 bg-emerald-50/50 p-6">
-              <div className="text-xs font-medium text-emerald-800 sm:text-sm">Total Available Balance</div>
+              <div className="text-xs font-medium text-emerald-800 sm:text-sm">Balance Available for Use</div>
               <div className="mt-1 text-xl font-bold text-emerald-900 sm:text-2xl">
                 {formatCurrency(balancesData.totalAvailable)}
               </div>

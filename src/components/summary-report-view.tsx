@@ -25,7 +25,7 @@ export function SummaryReportView({ summary }: SummaryReportViewProps) {
       { Metric: 'At Risk', Value: summary.accounts.atRisk },
       { Metric: 'Total Reports', Value: summary.reports.total },
       { Metric: 'Reports (30 days)', Value: summary.reports.last30Days },
-      { Metric: 'Total Available Balance', Value: formatCurrency(summary.metrics.totalAvailableBalance) },
+      { Metric: 'Balance Available for Use', Value: formatCurrency(summary.metrics.totalAvailableBalance) },
       { Metric: 'Payments being cleared', Value: formatCurrency(summary.metrics.totalPendingBalance) },
       { Metric: 'Payments for active orders', Value: formatCurrency(summary.metrics.totalPaymentsForActiveOrders) },
       { Metric: 'Total Orders Completed', Value: summary.metrics.totalOrdersCompleted },
@@ -77,7 +77,7 @@ export function SummaryReportView({ summary }: SummaryReportViewProps) {
       ['At Risk', String(summary.accounts.atRisk)],
       ['Total Reports', String(summary.reports.total)],
       ['Reports (30 days)', String(summary.reports.last30Days)],
-      ['Total Available Balance', formatCurrency(summary.metrics.totalAvailableBalance)],
+      ['Balance Available for Use', formatCurrency(summary.metrics.totalAvailableBalance)],
       ['Payments being cleared', formatCurrency(summary.metrics.totalPendingBalance)],
       ['Payments for active orders', formatCurrency(summary.metrics.totalPaymentsForActiveOrders)],
       ['Total Orders Completed', String(summary.metrics.totalOrdersCompleted)],
@@ -164,7 +164,7 @@ export function SummaryReportView({ summary }: SummaryReportViewProps) {
             <MetricCard label="New (7 days)" value={summary.accounts.newLast7Days} />
             <MetricCard label="Active" value={summary.accounts.active} />
             <MetricCard label="Total Reports" value={summary.reports.total} />
-            <MetricCard label="Available Balance" value={formatCurrency(summary.metrics.totalAvailableBalance)} />
+            <MetricCard label="Balance Available for Use" value={formatCurrency(summary.metrics.totalAvailableBalance)} />
             <MetricCard label="Payments being cleared" value={formatCurrency(summary.metrics.totalPendingBalance)} />
             <MetricCard label="Payments for active orders" value={formatCurrency(summary.metrics.totalPaymentsForActiveOrders)} />
             <MetricCard label="Orders Completed" value={summary.metrics.totalOrdersCompleted} />

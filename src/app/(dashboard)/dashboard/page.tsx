@@ -39,7 +39,7 @@ function ChartSkeleton() {
 function StatsSkeleton() {
   return (
     <div className="grid gap-3 grid-cols-2 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
-      {[...Array(7)].map((_, i) => (
+      {[...Array(9)].map((_, i) => (
         <div key={i} className="animate-pulse rounded-lg border border-gray-200 bg-white p-3 sm:p-4 md:p-5">
           <div className="h-3 w-20 bg-gray-200 rounded mb-3" />
           <div className="h-8 w-16 bg-gray-300 rounded" />
@@ -285,6 +285,19 @@ export default async function DashboardPage() {
                 </svg>
               }
             />
+            <Link href="/finances" prefetch className="block">
+              <AccountHealthCard
+                label="Balance Available for Use"
+                value={`$${totalAvailableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                subtitle="Total available balance across all accounts (ready to withdraw)"
+                variant="success"
+                icon={
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                }
+              />
+            </Link>
             <Link
               href="/finances"
               prefetch
