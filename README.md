@@ -31,7 +31,7 @@ A serverless Next.js application for managing multiple freelancing accounts acro
 ## 📁 Project Structure
 
 ```
-mini-gigs-hub/
+freelance-ops-brain/
 ├── prisma/
 │   └── schema.prisma          # Database models
 ├── src/
@@ -75,7 +75,7 @@ mini-gigs-hub/
 
 ```bash
 git clone <repo-url>
-cd mini-gigs-hub
+cd freelance-ops-brain
 npm install
 ```
 

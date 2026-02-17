@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Mini Gigs Hub - Quick Start Script
+#Mini Gigs Hub  - Quick Start Script
 # This script helps you get started quickly
 
 echo "🚀 Mini Gigs Hub - Quick Start"
