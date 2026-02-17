@@ -1,7 +1,22 @@
 import { db } from '@/lib/db';
 import { startOfMonth, endOfMonth, format, subDays } from 'date-fns';
+import type { Prisma } from '@prisma/client';
 
 const NEW_ACCOUNTS_DAYS = 7;
+
+/** Safely convert Prisma Decimal or unknown to number */
+function toNumber(val: unknown): number {
+  if (val == null) return 0;
+  if (typeof val === 'number') return isNaN(val) ? 0 : val;
+  if (typeof val === 'object' && val !== null && 'toNumber' in val) {
+    return (val as Prisma.Decimal).toNumber();
+  }
+  if (typeof val === 'string') {
+    const n = parseFloat(val);
+    return isNaN(n) ? 0 : n;
+  }
+  return 0;
+}
 
 export async function getNewlyCreatedAccountsCount() {
   const since = subDays(new Date(), NEW_ACCOUNTS_DAYS);
@@ -30,6 +45,7 @@ export type DashboardSummary = {
   metrics: {
     totalAvailableBalance: number;
     totalPendingBalance: number;
+    totalPaymentsForActiveOrders: number;
     totalOrdersCompleted: number;
     totalPendingOrders: number;
     avgRating: number | null;
@@ -64,6 +80,7 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
             pendingBalance: true,
             ordersCompleted: true,
             pendingOrders: true,
+            ordersInProgressValue: true,
             rankingPage: true,
             rating: true,
           },
@@ -80,6 +97,7 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
   const byLevel: Record<string, number> = {};
   let totalAvailable = 0;
   let totalPending = 0;
+  let totalPaymentsForActiveOrders = 0;
   let totalOrdersCompleted = 0;
   let totalPendingOrders = 0;
   let ratingSum = 0;
@@ -98,6 +116,7 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
     if (latest) {
       totalAvailable += Number(latest.availableBalance);
       totalPending += Number(latest.pendingBalance);
+      totalPaymentsForActiveOrders += Number(latest.ordersInProgressValue ?? 0);
       totalOrdersCompleted += latest.ordersCompleted;
       totalPendingOrders += latest.pendingOrders;
       if (latest.rating != null) {
@@ -155,6 +174,7 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
     metrics: {
       totalAvailableBalance: Math.round(totalAvailable * 100) / 100,
       totalPendingBalance: Math.round(totalPending * 100) / 100,
+      totalPaymentsForActiveOrders: Math.round(totalPaymentsForActiveOrders * 100) / 100,
       totalOrdersCompleted,
       totalPendingOrders,
       avgRating: ratingCount > 0 ? Math.round((ratingSum / ratingCount) * 100) / 100 : null,
@@ -166,7 +186,7 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
 }
 
 export async function getDashboardStats() {
-  const [totalGigs, totalReports, accountsByPlatform, accountsWithLatestReport] =
+  const [totalGigs, totalReports, accountsByPlatform, accountsWithLatestReport, allReportsForEarnings] =
     await Promise.all([
       db.gig.count(),
       db.shiftReport.count(),
@@ -174,8 +194,8 @@ export async function getDashboardStats() {
         by: ['platform'],
         _count: { id: true },
       }),
+      // Include all accounts for payment metrics (paused/risk accounts may still have pending/active order money)
       db.account.findMany({
-        where: { status: 'active' },
         include: {
           shiftReports: {
             orderBy: [{ reportDate: 'desc' }, { shift: 'desc' }],
@@ -185,26 +205,49 @@ export async function getDashboardStats() {
               pendingBalance: true,
               ordersCompleted: true,
               pendingOrders: true,
+              ordersInProgressValue: true,
             },
           },
         },
       }),
+      // Fetch earningsToDate directly from ShiftReport - avoids any include/select issues
+      db.shiftReport.findMany({
+        orderBy: [{ reportDate: 'desc' }, { shift: 'desc' }],
+        select: { accountId: true, earningsToDate: true },
+      }),
     ]);
 
   // Sum from latest report per account (avoids double-counting when accounts have multiple reports)
+  // Payments being cleared = pendingBalance (money from completed orders awaiting platform clearance)
+  // Payments for active orders = ordersInProgressValue (money from orders currently in progress)
   let totalAvailableEarnings = 0;
-  let totalPendingEarnings = 0;
+  let totalPaymentsBeingCleared = 0;
   let totalOrdersCompleted = 0;
-  let totalOrdersInProgress = 0;
+  let totalPaymentsForActiveOrders = 0;
   for (const a of accountsWithLatestReport) {
     const latest = a.shiftReports[0];
     if (latest) {
-      totalAvailableEarnings += Number(latest.availableBalance);
-      totalPendingEarnings += Number(latest.pendingBalance);
+      totalAvailableEarnings += toNumber(latest.availableBalance);
+      totalPaymentsBeingCleared += toNumber(latest.pendingBalance); // from completed orders
       totalOrdersCompleted += latest.ordersCompleted;
-      totalOrdersInProgress += latest.pendingOrders;
+      totalPaymentsForActiveOrders += toNumber(latest.ordersInProgressValue); // from orders in progress
     }
   }
+
+  // Earnings to date: sum of earningsToDate from latest report per account
+  // Reports ordered by reportDate desc, shift desc (PM before AM for same day)
+  // Use the most recent report that has earningsToDate filled in - if latest (e.g. PM) has null/0, fall back to previous (e.g. AM)
+  const accountEarnings = new Map<string, number>();
+  for (const r of allReportsForEarnings) {
+    const val = toNumber(r.earningsToDate);
+    if (!accountEarnings.has(r.accountId)) {
+      accountEarnings.set(r.accountId, val);
+    } else if (accountEarnings.get(r.accountId) === 0 && val > 0) {
+      // Latest report had 0, but this earlier report has a value - use it
+      accountEarnings.set(r.accountId, val);
+    }
+  }
+  const totalEarningsToDate = Array.from(accountEarnings.values()).reduce((sum, v) => sum + v, 0);
 
   return {
     totalGigs,
@@ -214,9 +257,10 @@ export async function getDashboardStats() {
       count: p._count.id,
     })),
     totalAvailableEarnings: Math.round(totalAvailableEarnings * 100) / 100,
-    totalPendingEarnings: Math.round(totalPendingEarnings * 100) / 100,
+    totalPaymentsBeingCleared: Math.round(totalPaymentsBeingCleared * 100) / 100,
     totalOrdersCompleted,
-    totalOrdersInProgress,
+    totalPaymentsForActiveOrders: Math.round(totalPaymentsForActiveOrders * 100) / 100,
+    totalEarningsToDate: Math.round(totalEarningsToDate * 100) / 100,
   };
 }
 

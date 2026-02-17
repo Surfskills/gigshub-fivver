@@ -15,6 +15,9 @@ type Report = {
   availableBalance: Prisma.Decimal;
   pendingBalance: Prisma.Decimal;
   rankingPage: number | null;
+  successRate?: Prisma.Decimal | null;
+  responseRate?: Prisma.Decimal | null;
+  earningsToDate?: Prisma.Decimal | null;
   notes: string | null;
   accountsCreated: Prisma.JsonValue;
   rating: Prisma.Decimal | null;
@@ -175,7 +178,7 @@ const ReportCard = memo(({
         </div>
 
         {/* Expandable Details */}
-        {(accountsCreated.length || ordersInProgress.length || report.notes || report.rankingPage) && (
+        {(accountsCreated.length || ordersInProgress.length || report.notes || report.rankingPage || report.responseRate != null || report.earningsToDate != null) && (
           <button
             onClick={() => setShowDetails(!showDetails)}
             className="mt-3 w-full flex items-center justify-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 py-2 border-t"
@@ -194,6 +197,18 @@ const ReportCard = memo(({
 
         {showDetails && (
           <div className="mt-3 pt-3 border-t space-y-3 text-sm">
+            {report.responseRate != null && (
+              <div>
+                <span className="text-gray-500">Response Rate:</span>{' '}
+                <span className="font-medium text-gray-900">{toNumber(report.responseRate)}%</span>
+              </div>
+            )}
+            {report.earningsToDate != null && (
+              <div>
+                <span className="text-gray-500">Earnings to Date:</span>{' '}
+                <span className="font-medium text-gray-900">{formatCurrency(report.earningsToDate)}</span>
+              </div>
+            )}
             {report.rankingPage != null && (
               <div>
                 <span className="text-gray-500">Ranking Page:</span>{' '}

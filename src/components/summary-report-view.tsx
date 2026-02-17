@@ -26,7 +26,8 @@ export function SummaryReportView({ summary }: SummaryReportViewProps) {
       { Metric: 'Total Reports', Value: summary.reports.total },
       { Metric: 'Reports (30 days)', Value: summary.reports.last30Days },
       { Metric: 'Total Available Balance', Value: formatCurrency(summary.metrics.totalAvailableBalance) },
-      { Metric: 'Total Pending Balance', Value: formatCurrency(summary.metrics.totalPendingBalance) },
+      { Metric: 'Payments being cleared', Value: formatCurrency(summary.metrics.totalPendingBalance) },
+      { Metric: 'Payments for active orders', Value: formatCurrency(summary.metrics.totalPaymentsForActiveOrders) },
       { Metric: 'Total Orders Completed', Value: summary.metrics.totalOrdersCompleted },
       { Metric: 'Total Pending Orders', Value: summary.metrics.totalPendingOrders },
       { Metric: 'Avg Rating', Value: summary.metrics.avgRating ?? 'N/A' },
@@ -77,7 +78,8 @@ export function SummaryReportView({ summary }: SummaryReportViewProps) {
       ['Total Reports', String(summary.reports.total)],
       ['Reports (30 days)', String(summary.reports.last30Days)],
       ['Total Available Balance', formatCurrency(summary.metrics.totalAvailableBalance)],
-      ['Total Pending Balance', formatCurrency(summary.metrics.totalPendingBalance)],
+      ['Payments being cleared', formatCurrency(summary.metrics.totalPendingBalance)],
+      ['Payments for active orders', formatCurrency(summary.metrics.totalPaymentsForActiveOrders)],
       ['Total Orders Completed', String(summary.metrics.totalOrdersCompleted)],
       ['Total Pending Orders', String(summary.metrics.totalPendingOrders)],
       ['Avg Rating', summary.metrics.avgRating != null ? String(summary.metrics.avgRating) : 'N/A'],
@@ -163,7 +165,8 @@ export function SummaryReportView({ summary }: SummaryReportViewProps) {
             <MetricCard label="Active" value={summary.accounts.active} />
             <MetricCard label="Total Reports" value={summary.reports.total} />
             <MetricCard label="Available Balance" value={formatCurrency(summary.metrics.totalAvailableBalance)} />
-            <MetricCard label="Pending Balance" value={formatCurrency(summary.metrics.totalPendingBalance)} />
+            <MetricCard label="Payments being cleared" value={formatCurrency(summary.metrics.totalPendingBalance)} />
+            <MetricCard label="Payments for active orders" value={formatCurrency(summary.metrics.totalPaymentsForActiveOrders)} />
             <MetricCard label="Orders Completed" value={summary.metrics.totalOrdersCompleted} />
             <MetricCard label="Pending Orders" value={summary.metrics.totalPendingOrders} />
             <MetricCard label="Avg Rating" value={summary.metrics.avgRating != null ? summary.metrics.avgRating.toFixed(2) : 'N/A'} />

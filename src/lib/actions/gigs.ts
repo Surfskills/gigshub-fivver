@@ -12,6 +12,8 @@ export async function createGig(data: {
   rated?: boolean;
   lastRatedDate?: string;
   nextPossibleRateDate?: string;
+  ratingType?: string;
+  ratingEmail?: string;
 }) {
   await requireAdmin();
 
@@ -24,6 +26,8 @@ export async function createGig(data: {
         rated: data.rated || false,
         lastRatedDate: data.lastRatedDate ? new Date(data.lastRatedDate) : undefined,
         nextPossibleRateDate: data.nextPossibleRateDate ? new Date(data.nextPossibleRateDate) : undefined,
+        ratingType: data.ratingType as 'client' | 'paypal' | 'cash' | undefined,
+        ratingEmail: data.ratingEmail?.trim() || undefined,
       },
     });
 
@@ -42,13 +46,15 @@ export async function updateGig(
     rated?: boolean;
     lastRatedDate?: string | null;
     nextPossibleRateDate?: string | null;
+    ratingType?: string | null;
+    ratingEmail?: string | null;
     status?: GigStatus;
   }
 ) {
   await requireAdmin();
 
   try {
-    const { lastRatedDate, nextPossibleRateDate, ...rest } = data;
+    const { lastRatedDate, nextPossibleRateDate, ratingType, ratingEmail, ...rest } = data;
     const gig = await db.gig.update({
       where: { id: gigId },
       data: {
@@ -58,6 +64,12 @@ export async function updateGig(
         }),
         ...(nextPossibleRateDate !== undefined && {
           nextPossibleRateDate: nextPossibleRateDate ? new Date(nextPossibleRateDate) : null,
+        }),
+        ...(ratingType !== undefined && {
+          ratingType: ratingType ? (ratingType as 'client' | 'paypal' | 'cash') : null,
+        }),
+        ...(ratingEmail !== undefined && {
+          ratingEmail: ratingEmail?.trim() || null,
         }),
       },
     });

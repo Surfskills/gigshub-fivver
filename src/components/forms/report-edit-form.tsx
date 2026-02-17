@@ -16,8 +16,11 @@ type Report = {
   pendingOrders: number;
   availableBalance: Prisma.Decimal;
   pendingBalance: Prisma.Decimal;
+  ordersInProgressValue?: Prisma.Decimal;
   rankingPage: number | null;
   successRate: Prisma.Decimal | null;
+  responseRate?: Prisma.Decimal | null;
+  earningsToDate?: Prisma.Decimal | null;
   notes: string | null;
   rating: Prisma.Decimal | null;
   handedOverToUserId: string | null;
@@ -251,8 +254,11 @@ export const ReportEditForm = memo(({ report, users }: ReportEditFormProps) => {
       pendingOrders: Number(formData.get('pendingOrders')),
       availableBalance: Number(formData.get('availableBalance')),
       pendingBalance: Number(formData.get('pendingBalance')),
+      ordersInProgressValue: Number(formData.get('ordersInProgressValue')) || 0,
       rankingPage: Number(formData.get('rankingPage')),
       successRate: Number(formData.get('successRate')),
+      responseRate: formData.get('responseRate') ? Number(formData.get('responseRate')) : null,
+      earningsToDate: formData.get('earningsToDate') ? Number(formData.get('earningsToDate')) : null,
       handedOverToUserId: (formData.get('handedOverToUserId') as string) || null,
       notes: (formData.get('notes') as string) || null,
       rating: ratingVal ? Number(ratingVal) : null,
@@ -346,12 +352,22 @@ export const ReportEditForm = memo(({ report, users }: ReportEditFormProps) => {
               step="0.01"
               defaultValue={toNumber(report.pendingBalance)}
             />
+            <FormInput
+              label="Payments for active orders ($)"
+              name="ordersInProgressValue"
+              type="number"
+              required
+              min="0"
+              step="0.01"
+              defaultValue={report.ordersInProgressValue != null ? toNumber(report.ordersInProgressValue) : 0}
+              helpText="Total $ value of orders currently in progress"
+            />
           </div>
         </div>
 
         {/* Metrics */}
         <div className="mb-5 sm:mb-6">
-          <SectionHeader title="Metrics" description="Ranking, rating, success rate and handover analyst" />
+          <SectionHeader title="Metrics" description="Ranking, rating, success rate, response rate, earnings and handover analyst" />
           <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
             <FormInput
               label="Ranking Page"
@@ -383,6 +399,27 @@ export const ReportEditForm = memo(({ report, users }: ReportEditFormProps) => {
               step="0.01"
               defaultValue={report.successRate != null ? toNumber(report.successRate) : ''}
               placeholder="e.g., 95.5"
+            />
+            <FormInput
+              label="Response Rate (%)"
+              name="responseRate"
+              type="number"
+              min="0"
+              max="100"
+              step="0.01"
+              defaultValue={report.responseRate != null ? toNumber(report.responseRate) : ''}
+              placeholder="e.g., 98"
+              helpText="Percentage of messages/requests responded to"
+            />
+            <FormInput
+              label="Earnings to Date ($)"
+              name="earningsToDate"
+              type="number"
+              min="0"
+              step="0.01"
+              defaultValue={report.earningsToDate != null ? toNumber(report.earningsToDate) : ''}
+              placeholder="e.g., 1250.00"
+              helpText="Total earnings for this account (available + withdrawn)"
             />
             <div className="space-y-1.5">
               <label htmlFor="handedOverToUserId" className="block text-xs sm:text-sm font-semibold text-gray-700">

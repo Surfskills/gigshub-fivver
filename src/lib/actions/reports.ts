@@ -16,8 +16,11 @@ export async function submitShiftReport(data: {
   pendingOrders: number;
   availableBalance: number;
   pendingBalance: number;
+  ordersInProgressValue?: number;
   rankingPage?: number;
   successRate?: number;
+  responseRate?: number;
+  earningsToDate?: number;
   notes?: string;
   accountsCreated?: AccountCreated[];
   rating?: number;
@@ -36,8 +39,11 @@ export async function submitShiftReport(data: {
         pendingOrders: data.pendingOrders,
         availableBalance: data.availableBalance,
         pendingBalance: data.pendingBalance,
+        ordersInProgressValue: data.ordersInProgressValue ?? 0,
         rankingPage: data.rankingPage,
         successRate: data.successRate != null ? data.successRate : undefined,
+        responseRate: data.responseRate != null ? data.responseRate : undefined,
+        earningsToDate: data.earningsToDate != null ? data.earningsToDate : undefined,
         notes: data.notes,
         handedOverToUserId: data.handedOverToUserId || undefined,
         accountsCreated:
@@ -55,6 +61,7 @@ export async function submitShiftReport(data: {
 
     revalidatePath('/reports');
     revalidatePath(`/reports/${data.accountId}`);
+    revalidatePath('/dashboard');
     revalidatePath('/');
 
     return { success: true, report };
@@ -76,8 +83,11 @@ export async function updateShiftReport(
     pendingOrders?: number;
     availableBalance?: number;
     pendingBalance?: number;
+    ordersInProgressValue?: number;
     rankingPage?: number | null;
     successRate?: number | null;
+    responseRate?: number | null;
+    earningsToDate?: number | null;
     notes?: string | null;
     accountsCreated?: AccountCreated[] | null;
     rating?: number | null;
@@ -108,6 +118,7 @@ export async function updateShiftReport(
 
   revalidatePath('/reports');
   revalidatePath('/reports/history');
+  revalidatePath('/dashboard');
   revalidatePath(`/accounts/${report.accountId}`);
   revalidatePath('/');
   return { success: true, report };

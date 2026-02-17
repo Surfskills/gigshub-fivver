@@ -123,9 +123,10 @@ export default async function DashboardPage() {
       totalReports: 0,
       accountsByPlatform: [],
       totalAvailableEarnings: 0,
-      totalPendingEarnings: 0,
+      totalPaymentsBeingCleared: 0,
       totalOrdersCompleted: 0,
-      totalOrdersInProgress: 0,
+      totalPaymentsForActiveOrders: 0,
+      totalEarningsToDate: 0,
     };
     monthlyTrends = [];
     leaderboard = [];
@@ -174,7 +175,7 @@ export default async function DashboardPage() {
                 <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                 </svg>
-                ${stats.totalAvailableEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                ${totalAvailableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
           </div>
@@ -244,22 +245,13 @@ export default async function DashboardPage() {
               }
             />
             <AccountHealthCard
-              label="Total Available"
-              value={`$${stats.totalAvailableEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              label="Earnings to Date"
+              value={`$${stats.totalEarningsToDate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              subtitle="Sum of earnings to date from latest report per account"
               variant="success"
               icon={
                 <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              }
-            />
-            <AccountHealthCard
-              label="Pending Balance"
-              value={`$${stats.totalPendingEarnings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-              variant="warning"
-              icon={
-                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               }
             />
@@ -273,8 +265,20 @@ export default async function DashboardPage() {
               }
             />
             <AccountHealthCard 
-              label="Total Orders In Progress" 
-              value={stats.totalOrdersInProgress}
+              label="Payments for Active Orders" 
+              value={`$${stats.totalPaymentsForActiveOrders.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              subtitle="Money from orders currently in progress"
+              icon={
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              }
+            />
+            <AccountHealthCard
+              label="Payments Being Cleared"
+              value={`$${stats.totalPaymentsBeingCleared.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              subtitle="Money from completed orders awaiting platform clearance"
+              variant="warning"
               icon={
                 <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -288,13 +292,13 @@ export default async function DashboardPage() {
             >
               <div className="flex items-start justify-between gap-2 mb-2 sm:mb-3">
                 <div className="text-[11px] sm:text-xs md:text-sm uppercase tracking-wide text-gray-600 font-medium">
-                  Total Available (processed out)
+                  View All Finances
                 </div>
               </div>
               <div className="text-2xl sm:text-3xl md:text-4xl font-bold tabular-nums text-emerald-900">
-                ${totalAvailableBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                →
               </div>
-              <div className="mt-2 text-xs font-medium text-emerald-700">View all →</div>
+              <div className="mt-2 text-xs font-medium text-emerald-700">Finances</div>
             </Link>
           </div>
         </Suspense>

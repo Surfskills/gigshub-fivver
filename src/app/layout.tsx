@@ -10,11 +10,8 @@ const inter = Inter({
   fallback: ['system-ui', 'arial'],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://yourdomain.com');
-const appName = 'Mini Gigs Hub';
-const appDescription = 'Operations and reporting dashboard for managing multiple freelancing accounts across Fiverr, Upwork, and direct clients. Track gigs, shift reports, earnings, and analytics in one place.';
-
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   title: 'Mini Gigs Hub',
   description: 'Operations & Reporting Dashboard for Freelancing Accounts',
   manifest: '/manifest.json',

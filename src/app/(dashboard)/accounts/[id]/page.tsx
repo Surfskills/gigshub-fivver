@@ -33,6 +33,8 @@ export default async function AccountDetailPage({ params }: AccountDetailPagePro
     const rated = formData.get('rated') === 'true';
     const lastRatedDate = formData.get('lastRatedDate') as string | null;
     const nextPossibleRateDate = formData.get('nextPossibleRateDate') as string | null;
+    const ratingType = formData.get('ratingType') as string | null;
+    const ratingEmail = formData.get('ratingEmail') as string | null;
 
     await createGig({
       accountId: params.id,
@@ -41,6 +43,8 @@ export default async function AccountDetailPage({ params }: AccountDetailPagePro
       rated,
       lastRatedDate: rated && lastRatedDate ? lastRatedDate : undefined,
       nextPossibleRateDate: rated && nextPossibleRateDate ? nextPossibleRateDate : undefined,
+      ratingType: rated && ratingType ? ratingType : undefined,
+      ratingEmail: rated && ratingType === 'paypal' && ratingEmail ? ratingEmail.trim() : undefined,
     });
   }
 

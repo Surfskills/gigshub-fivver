@@ -151,6 +151,8 @@ export default async function ReportsHistoryPage({ searchParams }: PageProps) {
                   <th className="px-4 py-3 text-right text-xs font-medium text-gray-600">Pending</th>
                   <th className="px-4 py-3 text-right text-xs font-medium text-gray-600">Available</th>
                   <th className="px-4 py-3 text-right text-xs font-medium text-gray-600">Rating</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-600">Response %</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-600">Earnings to Date</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-600">Reported by</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-600">Actions</th>
                 </tr>
@@ -189,6 +191,12 @@ export default async function ReportsHistoryPage({ searchParams }: PageProps) {
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-600">
                       {formatRating(r.rating != null ? Number(r.rating) : null)}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-right text-sm text-gray-600">
+                      {r.responseRate != null ? `${Number(r.responseRate)}%` : '—'}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-right text-sm font-medium text-gray-700">
+                      {r.earningsToDate != null ? formatCurrency(Number(r.earningsToDate)) : '—'}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-600">{r.reportedBy.name}</td>
                     <td className="whitespace-nowrap px-4 py-3">

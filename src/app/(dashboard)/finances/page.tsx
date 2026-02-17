@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { getFinancesData, getWithdrawals, getExpenditures, getPayoutDetails } from '@/lib/queries/finances';
+import { getFinancesData, getWithdrawals, getExpenditures, getPayoutDetails, getRatingInformation } from '@/lib/queries/finances';
 import { format } from 'date-fns';
 import { FinancesPageTabs } from '@/components/finances-page-tabs';
 
@@ -8,13 +8,15 @@ export default async function FinancesPage() {
   let withdraws;
   let expendituresData: Awaited<ReturnType<typeof getExpenditures>> = [];
   let payoutDetailsData: Awaited<ReturnType<typeof getPayoutDetails>> = [];
+  let ratingInformationData: Awaited<ReturnType<typeof getRatingInformation>> = [];
   let accountOptions: { id: string; label: string }[] = [];
   try {
-    const [balances, w, expenditures, payoutDetails, accounts] = await Promise.all([
+    const [balances, w, expenditures, payoutDetails, ratingInformation, accounts] = await Promise.all([
       getFinancesData(),
       getWithdrawals(),
       getExpenditures(),
       getPayoutDetails(),
+      getRatingInformation(),
       db.account.findMany({
         where: { status: 'active' },
         select: { id: true, platform: true, username: true },
@@ -25,6 +27,7 @@ export default async function FinancesPage() {
     withdraws = w;
     expendituresData = expenditures;
     payoutDetailsData = payoutDetails;
+    ratingInformationData = ratingInformation;
     accountOptions = accounts.map((a) => ({
       id: a.id,
       label: `${a.platform} – ${a.username}`,
@@ -63,6 +66,7 @@ export default async function FinancesPage() {
         withdraws={withdraws}
         expenditures={expendituresData}
         payoutDetails={payoutDetailsData}
+        ratingInformation={ratingInformationData}
         accountOptions={accountOptions}
       />
       </div>

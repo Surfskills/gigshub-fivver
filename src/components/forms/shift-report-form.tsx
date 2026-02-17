@@ -12,8 +12,11 @@ export type LastReportData = {
   pendingOrders: number;
   availableBalance: number;
   pendingBalance: number;
+  ordersInProgressValue?: number;
   rankingPage?: number;
   successRate?: number;
+  responseRate?: number;
+  earningsToDate?: number;
   notes?: string;
   rating?: number;
   handedOverToUserId?: string | null;
@@ -217,9 +220,12 @@ export const ShiftReportForm = memo(({
   const [pendingOrders, setPendingOrders] = useState<string>(() => String(lastReport?.pendingOrders ?? ''));
   const [availableBalance, setAvailableBalance] = useState<string>(() => String(lastReport?.availableBalance ?? ''));
   const [pendingBalance, setPendingBalance] = useState<string>(() => String(lastReport?.pendingBalance ?? ''));
+  const [ordersInProgressValue, setOrdersInProgressValue] = useState<string>(() => String(lastReport?.ordersInProgressValue ?? ''));
   const [rankingPage, setRankingPage] = useState<string>(() => (lastReport?.rankingPage != null ? String(lastReport.rankingPage) : ''));
   const [rating, setRating] = useState<string>(() => (lastReport?.rating != null ? String(lastReport.rating) : ''));
   const [successRate, setSuccessRate] = useState<string>(() => (lastReport?.successRate != null ? String(lastReport.successRate) : ''));
+  const [responseRate, setResponseRate] = useState<string>(() => (lastReport?.responseRate != null ? String(lastReport.responseRate) : ''));
+  const [earningsToDate, setEarningsToDate] = useState<string>(() => (lastReport?.earningsToDate != null ? String(lastReport.earningsToDate) : ''));
   const [handedOverToUserId, setHandedOverToUserId] = useState<string>(() => lastReport?.handedOverToUserId ?? '');
   const [notes, setNotes] = useState<string>(() => lastReport?.notes ?? '');
 
@@ -230,9 +236,12 @@ export const ShiftReportForm = memo(({
       setPendingOrders(String(lastReport.pendingOrders ?? ''));
       setAvailableBalance(String(lastReport.availableBalance ?? ''));
       setPendingBalance(String(lastReport.pendingBalance ?? ''));
+      setOrdersInProgressValue(String(lastReport.ordersInProgressValue ?? ''));
       setRankingPage(lastReport.rankingPage != null ? String(lastReport.rankingPage) : '');
       setRating(lastReport.rating != null ? String(lastReport.rating) : '');
       setSuccessRate(lastReport.successRate != null ? String(lastReport.successRate) : '');
+      setResponseRate(lastReport.responseRate != null ? String(lastReport.responseRate) : '');
+      setEarningsToDate(lastReport.earningsToDate != null ? String(lastReport.earningsToDate) : '');
       setHandedOverToUserId(lastReport.handedOverToUserId ?? '');
       setNotes(lastReport.notes ?? '');
       setOrdersInProgress(lastReport.ordersInProgress?.length ? (lastReport.ordersInProgress as OrderInProgress[]) : []);
@@ -283,8 +292,11 @@ export const ShiftReportForm = memo(({
       pendingOrders: Number(pendingOrders) || 0,
       availableBalance: Number(availableBalance) || 0,
       pendingBalance: Number(pendingBalance) || 0,
+      ordersInProgressValue: Number(ordersInProgressValue) || 0,
       rankingPage: Number(rankingPage),
       successRate: Number(successRate),
+      responseRate: responseRate ? Number(responseRate) : undefined,
+      earningsToDate: earningsToDate ? Number(earningsToDate) : undefined,
       handedOverToUserId: handedOverToUserId,
       notes: notes.trim() || undefined,
       rating: rating ? Number(rating) : undefined,
@@ -297,9 +309,12 @@ export const ShiftReportForm = memo(({
       setPendingOrders('');
       setAvailableBalance('');
       setPendingBalance('');
+      setOrdersInProgressValue('');
       setRankingPage('');
       setRating('');
       setSuccessRate('');
+      setResponseRate('');
+      setEarningsToDate('');
       setHandedOverToUserId('');
       setNotes('');
       setOrdersInProgress([]);
@@ -309,7 +324,7 @@ export const ShiftReportForm = memo(({
     }
 
     setIsSubmitting(false);
-  }, [accountId, today, ordersInProgress, onReportSubmitted, ordersCompleted, pendingOrders, availableBalance, pendingBalance, rankingPage, rating, successRate, handedOverToUserId, notes]);
+  }, [accountId, today, ordersInProgress, onReportSubmitted, ordersCompleted, pendingOrders, availableBalance, pendingBalance, ordersInProgressValue, rankingPage, rating, successRate, responseRate, earningsToDate, handedOverToUserId, notes]);
 
   // Early return for all reports complete
   if (availableShifts.length === 0) {
@@ -427,12 +442,23 @@ export const ShiftReportForm = memo(({
               value={pendingBalance}
               onChange={setPendingBalance}
             />
+            <FormInput
+              label="Payments for active orders ($)"
+              name="ordersInProgressValue"
+              type="number"
+              required
+              min="0"
+              step="0.01"
+              value={ordersInProgressValue}
+              onChange={setOrdersInProgressValue}
+              helpText="Total $ value of orders currently in progress"
+            />
           </div>
         </div>
 
         {/* Metrics */}
         <div className="mb-5 sm:mb-6">
-          <SectionHeader title="Metrics" description="Ranking, rating, success rate and handover analyst" />
+          <SectionHeader title="Metrics" description="Ranking, rating, success rate, response rate, earnings and handover analyst" />
           <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
             <FormInput
               label="Ranking Page"
@@ -467,6 +493,29 @@ export const ShiftReportForm = memo(({
               placeholder="e.g., 95.5"
               value={successRate}
               onChange={setSuccessRate}
+            />
+            <FormInput
+              label="Response Rate (%)"
+              name="responseRate"
+              type="number"
+              min="0"
+              max="100"
+              step="0.01"
+              placeholder="e.g., 98"
+              value={responseRate}
+              onChange={setResponseRate}
+              helpText="Percentage of messages/requests responded to"
+            />
+            <FormInput
+              label="Earnings to Date ($)"
+              name="earningsToDate"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="e.g., 1250.00"
+              value={earningsToDate}
+              onChange={setEarningsToDate}
+              helpText="Total earnings for this account (available + withdrawn)"
             />
             <div className="space-y-1.5">
               <label htmlFor="handedOverToUserId" className="block text-xs sm:text-sm font-semibold text-gray-700">

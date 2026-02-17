@@ -4,6 +4,9 @@ import { memo, useState, useCallback, useEffect } from 'react';
 import { updateGig } from '@/lib/actions/gigs';
 import { GIG_TYPES } from '@/lib/gig-types';
 
+const RATING_TYPES = ['client', 'paypal', 'cash'] as const;
+type RatingType = (typeof RATING_TYPES)[number];
+
 type Gig = {
   id: string;
   name: string;
@@ -12,6 +15,8 @@ type Gig = {
   rated: boolean;
   lastRatedDate: Date | null;
   nextPossibleRateDate: Date | null;
+  ratingType?: string | null;
+  ratingEmail?: string | null;
 };
 
 interface GigRatingEditProps {
@@ -204,6 +209,8 @@ export const GigRatingEdit = memo(function GigRatingEdit({ gig }: GigRatingEditP
   const [nextPossibleRateDate, setNextPossibleRateDate] = useState(
     toDateInputValue(gig.nextPossibleRateDate)
   );
+  const [ratingType, setRatingType] = useState<string>(gig.ratingType || '');
+  const [ratingEmail, setRatingEmail] = useState<string>(gig.ratingEmail || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notification, setNotification] = useState<{
     message: string;
@@ -223,6 +230,8 @@ export const GigRatingEdit = memo(function GigRatingEdit({ gig }: GigRatingEditP
         rated,
         lastRatedDate: rated && lastRatedDate ? lastRatedDate : null,
         nextPossibleRateDate: rated && nextPossibleRateDate ? nextPossibleRateDate : null,
+        ratingType: rated && ratingType ? (ratingType as RatingType) : null,
+        ratingEmail: rated && ratingType === 'paypal' ? ratingEmail.trim() || null : null,
       });
 
       if (result.success) {
@@ -245,7 +254,7 @@ export const GigRatingEdit = memo(function GigRatingEdit({ gig }: GigRatingEditP
     } finally {
       setIsSubmitting(false);
     }
-  }, [gig.id, name, type, status, rated, lastRatedDate, nextPossibleRateDate]);
+  }, [gig.id, name, type, status, rated, lastRatedDate, nextPossibleRateDate, ratingType, ratingEmail]);
 
   const handleCancel = useCallback(() => {
     setIsEditing(false);
@@ -255,8 +264,10 @@ export const GigRatingEdit = memo(function GigRatingEdit({ gig }: GigRatingEditP
     setRated(gig.rated);
     setLastRatedDate(toDateInputValue(gig.lastRatedDate));
     setNextPossibleRateDate(toDateInputValue(gig.nextPossibleRateDate));
+    setRatingType(gig.ratingType || '');
+    setRatingEmail(gig.ratingEmail || '');
     setNotification(null);
-  }, [gig.name, gig.type, gig.status, gig.rated, gig.lastRatedDate, gig.nextPossibleRateDate]);
+  }, [gig.name, gig.type, gig.status, gig.rated, gig.lastRatedDate, gig.nextPossibleRateDate, gig.ratingType, gig.ratingEmail]);
 
   const closeNotification = useCallback(() => {
     setNotification(null);
@@ -314,6 +325,16 @@ export const GigRatingEdit = memo(function GigRatingEdit({ gig }: GigRatingEditP
                       </svg>
                       <span className="text-gray-700">
                         <span className="font-medium">Next rate:</span> {formatDate(gig.nextPossibleRateDate)}
+                      </span>
+                    </div>
+                  )}
+                  {gig.ratingType && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-gray-700">
+                        <span className="font-medium">Type:</span> {gig.ratingType.charAt(0).toUpperCase() + gig.ratingType.slice(1)}
+                        {gig.ratingType === 'paypal' && gig.ratingEmail && (
+                          <span className="ml-1">({gig.ratingEmail})</span>
+                        )}
                       </span>
                     </div>
                   )}
@@ -453,6 +474,61 @@ export const GigRatingEdit = memo(function GigRatingEdit({ gig }: GigRatingEditP
                       "
                     />
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Rating Type
+                    </label>
+                    <select
+                      value={ratingType}
+                      onChange={(e) => setRatingType(e.target.value)}
+                      disabled={isSubmitting}
+                      className="
+                        w-full
+                        px-4 py-3 sm:px-3 sm:py-2
+                        min-h-[48px] sm:min-h-[36px]
+                        border border-gray-300 rounded-lg
+                        text-sm
+                        focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                        disabled:opacity-50 disabled:bg-gray-50
+                        transition-all
+                        touch-manipulation
+                      "
+                    >
+                      <option value="">— Select type —</option>
+                      {RATING_TYPES.map((t) => (
+                        <option key={t} value={t}>
+                          {t.charAt(0).toUpperCase() + t.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {ratingType === 'paypal' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        PayPal Email
+                      </label>
+                      <input
+                        type="email"
+                        value={ratingEmail}
+                        onChange={(e) => setRatingEmail(e.target.value)}
+                        disabled={isSubmitting}
+                        placeholder="e.g., user@example.com"
+                        className="
+                          w-full
+                          px-4 py-3 sm:px-3 sm:py-2
+                          min-h-[48px] sm:min-h-[36px]
+                          border border-gray-300 rounded-lg
+                          text-sm
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                          disabled:opacity-50 disabled:bg-gray-50
+                          transition-all
+                          touch-manipulation
+                        "
+                      />
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -13,6 +13,8 @@ interface GigFormProps {
     rated?: boolean;
     lastRatedDate?: string;
     nextPossibleRateDate?: string;
+    ratingType?: string;
+    ratingEmail?: string;
   };
 }
 
@@ -120,13 +122,23 @@ const CheckboxField = memo(({
 ));
 CheckboxField.displayName = 'CheckboxField';
 
+const RATING_TYPES = ['client', 'paypal', 'cash'] as const;
+
 // Memoized rated section
 const RatedGigSection = memo(({
   lastRatedDate,
   nextPossibleRateDate,
+  ratingType,
+  ratingEmail,
+  onRatingTypeChange,
+  onRatingEmailChange,
 }: {
   lastRatedDate?: string;
   nextPossibleRateDate?: string;
+  ratingType?: string;
+  ratingEmail?: string;
+  onRatingTypeChange?: (value: string) => void;
+  onRatingEmailChange?: (value: string) => void;
 }) => (
   <div className="p-3 sm:p-4 bg-blue-50 rounded-lg border border-blue-200 space-y-3 sm:space-y-4">
     <div className="flex items-start gap-2">
@@ -161,6 +173,46 @@ const RatedGigSection = memo(({
         helpText="When can this gig be rated again?"
       />
     </div>
+
+    <div className="space-y-3 sm:space-y-4">
+      <div>
+        <label htmlFor="ratingType" className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5">
+          Rating Type
+        </label>
+        <select
+          id="ratingType"
+          name="ratingType"
+          value={ratingType ?? ''}
+          onChange={(e) => onRatingTypeChange?.(e.target.value)}
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 sm:py-2.5 text-sm sm:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
+        >
+          <option value="">— Select type —</option>
+          {RATING_TYPES.map((t) => (
+            <option key={t} value={t}>
+              {t.charAt(0).toUpperCase() + t.slice(1)}
+            </option>
+          ))}
+        </select>
+      </div>
+      {ratingType === 'paypal' && (
+        <div className="space-y-1.5">
+          <label htmlFor="ratingEmail" className="block text-xs sm:text-sm font-semibold text-gray-700">
+            PayPal Email <span className="text-red-500 ml-0.5">*</span>
+          </label>
+          <input
+            id="ratingEmail"
+            type="email"
+            name="ratingEmail"
+            value={ratingEmail}
+            onChange={(e) => onRatingEmailChange?.(e.target.value)}
+            required
+            placeholder="e.g., user@example.com"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 sm:py-2.5 text-sm sm:text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
+          />
+          <p className="text-[10px] sm:text-xs text-gray-500">Email address for PayPal rating</p>
+        </div>
+      )}
+    </div>
   </div>
 ));
 RatedGigSection.displayName = 'RatedGigSection';
@@ -172,6 +224,8 @@ export const GigForm = memo(({
 }: GigFormProps) => {
   const [rated, setRated] = useState(defaultValues?.rated ?? false);
   const [gigType, setGigType] = useState(defaultValues?.type || '');
+  const [ratingType, setRatingType] = useState(defaultValues?.ratingType || '');
+  const [ratingEmail, setRatingEmail] = useState(defaultValues?.ratingEmail || '');
 
   // Memoized handlers
   const handleRatedChange = useCallback((checked: boolean) => {
@@ -180,6 +234,11 @@ export const GigForm = memo(({
 
   const handleGigTypeChange = useCallback((value: string) => {
     setGigType(value);
+  }, []);
+
+  const handleRatingTypeChange = useCallback((value: string) => {
+    setRatingType(value);
+    if (value !== 'paypal') setRatingEmail('');
   }, []);
 
   // Calculate if form is in edit mode
@@ -260,6 +319,10 @@ export const GigForm = memo(({
           <RatedGigSection
             lastRatedDate={defaultValues?.lastRatedDate}
             nextPossibleRateDate={defaultValues?.nextPossibleRateDate}
+            ratingType={ratingType}
+            ratingEmail={ratingEmail}
+            onRatingTypeChange={handleRatingTypeChange}
+            onRatingEmailChange={setRatingEmail}
           />
         )}
 

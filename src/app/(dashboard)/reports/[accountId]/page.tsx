@@ -55,8 +55,11 @@ export default async function ReportSubmitPage({ params }: ReportSubmitPageProps
     pendingOrders: number;
     availableBalance: number;
     pendingBalance: number;
+    ordersInProgressValue?: number;
     rankingPage?: number;
     successRate?: number;
+    responseRate?: number;
+    earningsToDate?: number;
     notes?: string;
     rating?: number;
     handedOverToUserId?: string | null;
@@ -71,8 +74,11 @@ export default async function ReportSubmitPage({ params }: ReportSubmitPageProps
       pendingOrders: latestReport.pendingOrders,
       availableBalance: Number(latestReport.availableBalance),
       pendingBalance: Number(latestReport.pendingBalance),
+      ordersInProgressValue: Number(latestReport.ordersInProgressValue ?? 0),
       rankingPage: latestReport.rankingPage ?? undefined,
       successRate: latestReport.successRate != null ? Number(latestReport.successRate) : undefined,
+      responseRate: latestReport.responseRate != null ? Number(latestReport.responseRate) : undefined,
+      earningsToDate: latestReport.earningsToDate != null ? Number(latestReport.earningsToDate) : undefined,
       notes: latestReport.notes ?? undefined,
       rating: latestReport.rating != null ? Number(latestReport.rating) : undefined,
       handedOverToUserId: latestReport.handedOverToUserId ?? undefined,

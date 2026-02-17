@@ -3,6 +3,7 @@ import { memo } from 'react';
 interface AccountHealthCardProps {
   label: string;
   value: number | string;
+  subtitle?: string;
   trend?: {
     value: number;
     direction: 'up' | 'down' | 'neutral';
@@ -53,6 +54,7 @@ TrendIndicator.displayName = 'TrendIndicator';
 export const AccountHealthCard = memo(({ 
   label, 
   value, 
+  subtitle,
   trend, 
   icon,
   variant = 'default' 
@@ -108,6 +110,9 @@ export const AccountHealthCard = memo(({
       `}>
         {value}
       </div>
+      {subtitle && (
+        <p className="mt-1.5 text-xs text-gray-500 leading-snug">{subtitle}</p>
+      )}
     </div>
   );
 });

@@ -34,6 +34,12 @@ enum GigStatus {
   deprecated
 }
 
+enum RatingType {
+  client
+  paypal
+  cash
+}
+
 enum Shift {
   AM
   PM
@@ -152,6 +158,8 @@ model Gig {
   rated                Boolean     @default(false)
   lastRatedDate        DateTime?   @db.Date   // when gig was last rated
   nextPossibleRateDate DateTime?   @db.Date   // next date it can be rated (interval)
+  ratingType           RatingType? // client, paypal, or cash
+  ratingEmail          String?     @db.VarChar(255) // required when ratingType is paypal
   status               GigStatus   @default(active)
   createdAt            DateTime    @default(now())
   updatedAt            DateTime    @updatedAt
@@ -173,8 +181,11 @@ model ShiftReport {
   pendingOrders        Int       @default(0)
   availableBalance     Decimal   @db.Decimal(10, 2)
   pendingBalance       Decimal   @db.Decimal(10, 2)
+  ordersInProgressValue Decimal  @db.Decimal(10, 2) @default(0) // Money from orders in progress
   rankingPage          Int?      // nullable if not applicable
   successRate          Decimal?  @db.Decimal(5, 2)  // 0-100 percentage
+  responseRate         Decimal?  @db.Decimal(5, 2)  // 0-100 percentage
+  earningsToDate       Decimal?  @db.Decimal(10, 2) // Total earnings for account (available + withdrawn)
   notes                String?   @db.Text
 
   // Handover
