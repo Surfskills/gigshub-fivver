@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { db } from '@/lib/db';
+import { requireAdmin } from '@/lib/auth';
 
 export async function POST(req: Request) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    await requireAdmin();
 
     const body = await req.json();
     const { itemName, typeOfExpenditure, cost, transactionId } = body;
@@ -46,10 +43,14 @@ export async function POST(req: Request) {
 
     return NextResponse.json(expenditure);
   } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Failed to add expenditure';
+    if (msg === 'Unauthorized') {
+      return NextResponse.json({ error: msg }, { status: 401 });
+    }
+    if (msg === 'Forbidden') {
+      return NextResponse.json({ error: msg }, { status: 403 });
+    }
     console.error('Expenditure API error:', err);
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Failed to add expenditure' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

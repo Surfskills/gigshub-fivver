@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { db } from '@/lib/db';
+import { requireAdmin } from '@/lib/auth';
 
 export async function POST(req: Request) {
   try {
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    await requireAdmin();
 
     const body = await req.json();
     const { accountId, amount, withdrawDate, paymentMeans, notes } = body;
@@ -39,10 +36,14 @@ export async function POST(req: Request) {
 
     return NextResponse.json(withdraw);
   } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Failed to add withdrawal';
+    if (msg === 'Unauthorized') {
+      return NextResponse.json({ error: msg }, { status: 401 });
+    }
+    if (msg === 'Forbidden') {
+      return NextResponse.json({ error: msg }, { status: 403 });
+    }
     console.error('Withdraw API error:', err);
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Failed to add withdrawal' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

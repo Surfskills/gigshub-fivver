@@ -8,11 +8,12 @@ type Account = { id: string; platform: string; username: string };
 
 interface ReportsPageTabsProps {
   accounts: Account[];
+  isAdmin?: boolean;
 }
 
 type TabType = 'shift' | 'accounts-created';
 
-export function ReportsPageTabs({ accounts }: ReportsPageTabsProps) {
+export function ReportsPageTabs({ accounts, isAdmin = false }: ReportsPageTabsProps) {
   const [activeTab, setActiveTab] = useState<TabType>('shift');
 
   return (
@@ -36,8 +37,8 @@ export function ReportsPageTabs({ accounts }: ReportsPageTabsProps) {
         </nav>
       </div>
 
-      {activeTab === 'shift' && <ReportsSubmissionSection accounts={accounts} />}
-      {activeTab === 'accounts-created' && <AccountsCreatedSection />}
+      {activeTab === 'shift' && <ReportsSubmissionSection accounts={accounts} isAdmin={isAdmin} />}
+      {activeTab === 'accounts-created' && <AccountsCreatedSection isAdmin={isAdmin} />}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/db';
+import { getCurrentUser } from '@/lib/auth';
 import { startOfDay } from 'date-fns';
 import { ReportSubmitClient } from '@/components/report-submit-client';
 import { Shift } from '@prisma/client';
@@ -14,6 +15,8 @@ interface ReportSubmitPageProps {
 /** Submit report page — fetches lastReport on server (like edit report page). */
 export default async function ReportSubmitPage({ params }: ReportSubmitPageProps) {
   const { accountId } = await params;
+  const user = await getCurrentUser();
+  const isAdmin = user?.role === 'admin';
 
   const account = await db.account.findFirst({
     where: { id: accountId, status: 'active' },
@@ -90,6 +93,21 @@ export default async function ReportSubmitPage({ params }: ReportSubmitPageProps
 
   const existingShifts = todayReports.map((r) => r.shift) as Shift[];
   const accountName = `${account.platform} – ${account.username}`;
+
+  if (!isAdmin) {
+    return (
+      <div className="space-y-6">
+        <Link href="/reports" prefetch className="text-sm text-gray-500 hover:text-gray-700">
+          ← Submit Reports
+        </Link>
+        <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-6">
+          <p className="text-sm text-amber-800">
+            Only admins can submit shift reports. Contact an admin to submit a report.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

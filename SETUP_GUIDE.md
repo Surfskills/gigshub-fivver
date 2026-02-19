@@ -88,6 +88,7 @@ In Clerk Dashboard:
 1. **Paths**: Set sign-in URL to `/sign-in`, sign-up to `/sign-up`
 2. **Sessions**: Enable session token customization (if needed)
 3. **User Profile**: Enable name, email fields
+4. **Email (Custom SMTP)**: To send password reset emails via the same SMTP as this app (nodemailer), go to Configure → Email → Custom SMTP and use the same SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD from your .env
 
 ### 2.3 Create First Admin User
 

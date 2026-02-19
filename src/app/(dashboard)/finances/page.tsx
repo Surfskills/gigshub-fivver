@@ -1,9 +1,12 @@
 import { db } from '@/lib/db';
+import { getCurrentUser } from '@/lib/auth';
 import { getFinancesData, getWithdrawals, getExpenditures, getPayoutDetails, getRatingInformation } from '@/lib/queries/finances';
 import { format } from 'date-fns';
 import { FinancesPageTabs } from '@/components/finances-page-tabs';
 
 export default async function FinancesPage() {
+  const user = await getCurrentUser();
+  const isAdmin = user?.role === 'admin';
   let balancesData;
   let withdraws;
   let expendituresData: Awaited<ReturnType<typeof getExpenditures>> = [];
@@ -68,6 +71,7 @@ export default async function FinancesPage() {
         payoutDetails={payoutDetailsData}
         ratingInformation={ratingInformationData}
         accountOptions={accountOptions}
+        isAdmin={isAdmin}
       />
       </div>
     </div>

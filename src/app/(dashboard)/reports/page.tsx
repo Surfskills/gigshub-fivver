@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { db } from '@/lib/db';
+import { getCurrentUser } from '@/lib/auth';
 import { ReportsPageTabs } from '@/components/reports-page-tabs';
 import { startOfDay, format } from 'date-fns';
 import { REPORT_INTERVAL_HOURS } from '@/lib/queries/reports';
@@ -12,19 +13,23 @@ export const metadata = {
   description: 'Submit shift reports for your freelancing accounts.',
 };
 
-function EmptyState() {
+function EmptyState({ isAdmin }: { isAdmin: boolean }) {
   return (
     <div className="rounded-lg bg-white px-4 py-12 text-center shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
       <h3 className="text-base font-semibold text-gray-900">No accounts to report</h3>
       <p className="mt-2 text-sm text-gray-600">Create an account first to submit shift reports.</p>
-      <Link href="/accounts/new" prefetch className="mt-6 inline-flex rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-500">
-        Add Account
-      </Link>
+      {isAdmin && (
+        <Link href="/accounts/new" prefetch className="mt-6 inline-flex rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-500">
+          Add Account
+        </Link>
+      )}
     </div>
   );
 }
 
 export default async function ReportsPage() {
+  const user = await getCurrentUser();
+  const isAdmin = user?.role === 'admin';
   let allAccounts;
   try {
     allAccounts = await db.account.findMany({
@@ -44,7 +49,7 @@ export default async function ReportsPage() {
   if (allAccounts.length === 0) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <EmptyState />
+        <EmptyState isAdmin={isAdmin} />
       </div>
     );
   }
@@ -67,7 +72,7 @@ export default async function ReportsPage() {
         </div>
       </header>
 
-      <ReportsPageTabs accounts={allAccounts} />
+      <ReportsPageTabs accounts={allAccounts} isAdmin={isAdmin} />
     </div>
   );
 }

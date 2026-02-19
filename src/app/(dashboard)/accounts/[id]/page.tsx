@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { getCurrentUser } from '@/lib/auth';
 import { getAccountById } from '@/lib/queries/accounts';
 import { createGig } from '@/lib/actions/gigs';
 import { GigForm } from '@/components/forms/gig-form';
@@ -19,7 +20,11 @@ interface AccountDetailPageProps {
 }
 
 export default async function AccountDetailPage({ params }: AccountDetailPageProps) {
-  const account = await getAccountById(params.id);
+  const [user, account] = await Promise.all([
+    getCurrentUser(),
+    getAccountById(params.id),
+  ]);
+  const isAdmin = user?.role === 'admin';
 
   if (!account) {
     notFound();
@@ -65,26 +70,30 @@ export default async function AccountDetailPage({ params }: AccountDetailPagePro
           >
             View Reports
           </Link>
-          <Link
-            href={`/reports?accountId=${account.id}`}
-            prefetch
-            className="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-all duration-150 hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 active:scale-[0.98]"
-          >
-            Submit Report
-          </Link>
+          {isAdmin && (
+            <>
+              <Link
+                href={`/reports/${account.id}`}
+                prefetch
+                className="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-all duration-150 hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 active:scale-[0.98]"
+              >
+                Submit Report
+              </Link>
+              <Link
+                href={`/accounts/${account.id}/edit`}
+                prefetch
+                className="rounded border px-4 py-2 text-sm font-medium transition-all duration-150 hover:bg-gray-50 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 active:scale-[0.98]"
+              >
+                Edit Account
+              </Link>
+            </>
+          )}
           <Link
             href={`/analytics?accountId=${account.id}`}
             prefetch
             className="rounded border border-gray-300 px-4 py-2 text-sm font-medium transition-all duration-150 hover:bg-gray-50 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 active:scale-[0.98]"
           >
             Analytics
-          </Link>
-          <Link
-            href={`/accounts/${account.id}/edit`}
-            prefetch
-            className="rounded border px-4 py-2 text-sm font-medium transition-all duration-150 hover:bg-gray-50 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 active:scale-[0.98]"
-          >
-            Edit Account
           </Link>
         </div>
       </div>
@@ -133,10 +142,16 @@ export default async function AccountDetailPage({ params }: AccountDetailPagePro
           ))}
         </div>
 
-        <div>
-          <h2 className="mb-3 text-lg font-semibold">Add Gig</h2>
-          <GigForm action={createGigAction} />
-        </div>
+        {isAdmin ? (
+          <div>
+            <h2 className="mb-3 text-lg font-semibold">Add Gig</h2>
+            <GigForm action={createGigAction} />
+          </div>
+        ) : (
+          <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-4">
+            <p className="text-sm text-amber-800">Only admins can add gigs. Contact an admin.</p>
+          </div>
+        )}
       </div>
     </div>
   );

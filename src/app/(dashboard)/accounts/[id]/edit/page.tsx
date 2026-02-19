@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import type { AccountLevel, AccountStatus } from '@prisma/client';
+import { getCurrentUser } from '@/lib/auth';
 import { AccountForm } from '@/components/forms/account-form';
 
 export const dynamic = 'force-dynamic';
@@ -39,6 +40,11 @@ export default async function EditAccountPage({ params }: EditAccountPageProps) 
   // Skip DB access during build - Vercel build fails when DB is unavailable
   if (process.env.NEXT_PHASE === 'phase-production-build') {
     return <BuildPlaceholder />;
+  }
+
+  const user = await getCurrentUser();
+  if (user?.role !== 'admin') {
+    redirect(`/accounts/${params.id}`);
   }
 
   let account;

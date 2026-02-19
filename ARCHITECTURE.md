@@ -122,10 +122,15 @@ User object with role
 | Feature | Admin | Operator |
 |---------|-------|----------|
 | View Dashboard | ✓ | ✓ |
-| Submit Reports | ✓ | ✓ |
+| Submit Reports | ✓ | ✗ |
 | Create Accounts | ✓ | ✗ |
 | Edit Accounts | ✓ | ✗ |
 | Delete Accounts | ✓ | ✗ |
+| Add Gigs | ✓ | ✗ |
+| Add Withdrawals | ✓ | ✗ |
+| Add Expenditures | ✓ | ✗ |
+| Add/Update Payout Details | ✓ | ✗ |
+| Report Accounts Created | ✓ | ✗ |
 | Send Alerts | ✓ | ✗ |
 | View Analytics | ✓ | ✓ |
 | Export CSV | ✓ | ✓ |

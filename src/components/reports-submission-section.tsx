@@ -9,15 +9,26 @@ type Account = { id: string; platform: string; username: string };
 
 interface ReportsSubmissionSectionProps {
   accounts: Account[];
+  isAdmin?: boolean;
 }
 
 /** Account selector — links to /reports/[accountId] (same pattern as edit report). */
-export function ReportsSubmissionSection({ accounts }: ReportsSubmissionSectionProps) {
+export function ReportsSubmissionSection({ accounts, isAdmin = false }: ReportsSubmissionSectionProps) {
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil(accounts.length / PAGE_SIZE) || 1;
   const currentPage = Math.min(page, totalPages);
   const start = (currentPage - 1) * PAGE_SIZE;
   const paginatedAccounts = accounts.slice(start, start + PAGE_SIZE);
+
+  if (!isAdmin) {
+    return (
+      <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-6">
+        <p className="text-sm text-amber-800">
+          Only admins can submit shift reports. Contact an admin to submit a report.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-6">

@@ -219,48 +219,52 @@ export default function HomePageClient() {
                 Choose the plan that fits your team size. All plans include the core features.
               </p>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {[
-                  {
-                    name: 'Starter',
-                    accounts: '1–3 accounts',
-                    target: 'Solo freelancers',
-                    kes: '1,500',
-                    usd: '15',
-                    period: '/month',
-                    features: ['Unified dashboard', 'Shift reporting', 'Earnings tracking', 'Email alerts', 'CSV export'],
-                    popular: false,
-                  },
-                  {
-                    name: 'Growth',
-                    accounts: '4–10 accounts',
-                    target: 'Multi-account freelancers',
-                    kes: '5,000',
-                    usd: '50',
-                    period: '/month',
-                    features: ['Everything in Starter', 'Analytics dashboard', 'Financial records', 'Role-based access', 'Priority support'],
-                    popular: true,
-                  },
-                  {
-                    name: 'Scale',
-                    accounts: '11–25 accounts',
-                    target: 'Agencies & teams',
-                    kes: '8,000',
-                    usd: '80',
-                    period: '/month',
-                    features: ['Everything in Growth', 'Higher report volume', 'Multiple operators', 'Dedicated onboarding'],
-                    popular: false,
-                  },
-                  {
-                    name: 'Enterprise',
-                    accounts: '26+ accounts',
-                    target: 'Large teams',
-                    kes: 'Custom',
-                    usd: 'Custom',
-                    period: '',
-                    features: ['Everything in Scale', 'Custom account limits', 'Dedicated support', 'Custom integrations'],
-                    popular: false,
-                  },
-                ].map((plan) => (
+                {(() => {
+                  // KES is source of truth; USD derived via KES/USD rate (~130 KES = 1 USD)
+                  const KES_TO_USD = Number(process.env.NEXT_PUBLIC_KES_TO_USD_RATE) || 130;
+                  const kesToUsd = (kes: number) =>
+                    (kes / KES_TO_USD).toLocaleString('en-US', {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 2,
+                    });
+                  return [
+                    {
+                      name: 'Starter',
+                      accounts: '1–3 accounts',
+                      target: 'Solo freelancers',
+                      kes: 1500,
+                      period: '/month',
+                      features: ['Unified dashboard', 'Shift reporting', 'Earnings tracking', 'Email alerts', 'CSV export'],
+                      popular: false,
+                    },
+                    {
+                      name: 'Growth',
+                      accounts: '4–10 accounts',
+                      target: 'Multi-account freelancers',
+                      kes: 5000,
+                      period: '/month',
+                      features: ['Everything in Starter', 'Analytics dashboard', 'Financial records', 'Role-based access', 'Priority support'],
+                      popular: true,
+                    },
+                    {
+                      name: 'Scale',
+                      accounts: '11–25 accounts',
+                      target: 'Agencies & teams',
+                      kes: 8000,
+                      period: '/month',
+                      features: ['Everything in Growth', 'Higher report volume', 'Multiple operators', 'Dedicated onboarding'],
+                      popular: false,
+                    },
+                    {
+                      name: 'Enterprise',
+                      accounts: '26+ accounts',
+                      target: 'Large teams',
+                      kes: null,
+                      period: '',
+                      features: ['Everything in Scale', 'Custom account limits', 'Dedicated support', 'Custom integrations'],
+                      popular: false,
+                    },
+                  ].map((plan) => (
                   <div
                     key={plan.name}
                     className={`relative rounded-xl border-2 p-6 flex flex-col ${
@@ -279,11 +283,13 @@ export default function HomePageClient() {
                     <p className="text-xs text-[var(--text-muted)] -mt-0.5">{plan.target}</p>
                     <div className="mt-4 mb-4">
                       <span className="text-2xl font-bold text-[var(--text)]" style={{ fontFamily: "'Space Mono', monospace" }}>
-                        {plan.kes === 'Custom' ? 'Custom' : `KES ${plan.kes}`}
+                        {plan.kes === null ? 'Custom' : `KES ${plan.kes.toLocaleString()}`}
                       </span>
                       {plan.period && <span className="text-sm text-[var(--text-muted)]">{plan.period}</span>}
-                      {plan.kes !== 'Custom' && (
-                        <p className="text-sm text-[var(--text-muted)] mt-0.5">or USD {plan.usd}{plan.period}</p>
+                      {plan.kes !== null && (
+                        <p className="text-sm text-[var(--text-muted)] mt-0.5">
+                          or USD {kesToUsd(plan.kes)}{plan.period}
+                        </p>
                       )}
                     </div>
                     <ul className="space-y-2 flex-1">
@@ -312,7 +318,8 @@ export default function HomePageClient() {
                       Contact admin
                     </a>
                   </div>
-                ))}
+                ));
+                })()}
               </div>
             </div>
           </section>

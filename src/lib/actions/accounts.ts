@@ -8,12 +8,12 @@ import { Platform, AccountStatus, AccountLevel } from '@prisma/client';
 
 export type AccountCreatedInput = { email: string; type: 'seller' | 'buyer' };
 
-/** Report newly created accounts - creates Account records. Operators can use this. */
+/** Report newly created accounts - creates Account records. Admin only. */
 export async function reportAccountsCreated(data: {
   platform: Platform;
   accounts: AccountCreatedInput[];
 }) {
-  const user = await requireUser();
+  const user = await requireAdmin();
 
   if (!data.accounts.length) {
     return { success: false, error: 'Add at least one account' };

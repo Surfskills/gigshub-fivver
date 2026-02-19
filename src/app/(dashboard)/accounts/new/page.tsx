@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import Link from 'next/link';
+import { getCurrentUser } from '@/lib/auth';
 import { createAccount } from '@/lib/actions/accounts';
 import { AccountForm } from '@/components/forms/account-form';
 import { AccountLevel, Platform } from '@prisma/client';
@@ -23,7 +24,12 @@ function FormSkeleton() {
   );
 }
 
-export default function NewAccountPage() {
+export default async function NewAccountPage() {
+  const user = await getCurrentUser();
+  if (user?.role !== 'admin') {
+    redirect('/accounts');
+  }
+
   async function createAccountAction(formData: FormData) {
     'use server';
 

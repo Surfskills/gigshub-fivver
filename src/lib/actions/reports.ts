@@ -1,9 +1,11 @@
 'use server';
 
 import { db } from '@/lib/db';
-import { requireUser } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import { Shift, Prisma } from '@prisma/client';
+import { format } from 'date-fns';
+import { sendReportSubmittedNotification } from '@/lib/email/send';
 
 export type AccountCreated = { email: string; type: 'seller' | 'buyer' };
 export type OrderInProgress = { account: string; deadline: string; handlerPhone: string };
@@ -27,9 +29,20 @@ export async function submitShiftReport(data: {
   handedOverToUserId?: string | null;
   ordersInProgress?: OrderInProgress[];
 }) {
-  const user = await requireUser();
+  const user = await requireAdmin();
 
   try {
+    const [account, adminUsers] = await Promise.all([
+      db.account.findUnique({
+        where: { id: data.accountId },
+        select: { platform: true, username: true },
+      }),
+      db.user.findMany({
+        where: { role: 'admin' },
+        select: { email: true },
+      }),
+    ]);
+
     const report = await db.shiftReport.create({
       data: {
         accountId: data.accountId,
@@ -58,6 +71,16 @@ export async function submitShiftReport(data: {
         reportedByUserId: user.id,
       },
     });
+
+    const adminEmails = adminUsers.map((a) => a.email).filter(Boolean);
+    if (adminEmails.length > 0) {
+      sendReportSubmittedNotification(adminEmails, {
+        accountName: account ? `${account.platform} – ${account.username}` : data.accountId,
+        reportDate: format(new Date(data.reportDate), 'MMMM d, yyyy'),
+        shift: data.shift,
+        submittedBy: user.name || user.email,
+      }).catch((err) => console.error('Failed to send report notification:', err));
+    }
 
     revalidatePath('/reports');
     revalidatePath(`/reports/${data.accountId}`);
@@ -95,7 +118,7 @@ export async function updateShiftReport(
     ordersInProgress?: OrderInProgress[] | null;
   }
 ) {
-  await requireUser();
+  await requireAdmin();
 
   const report = await db.shiftReport.update({
     where: { id: reportId },

@@ -61,6 +61,7 @@ interface FinancesPageTabsProps {
   payoutDetails: PayoutDetailRecord[];
   ratingInformation: RatingInformationRecord[];
   accountOptions: AccountOption[];
+  isAdmin?: boolean;
 }
 
 function Pagination({
@@ -121,7 +122,7 @@ function Pagination({
   );
 }
 
-export function FinancesPageTabs({ balancesData, withdraws, expenditures, payoutDetails, ratingInformation, accountOptions }: FinancesPageTabsProps) {
+export function FinancesPageTabs({ balancesData, withdraws, expenditures, payoutDetails, ratingInformation, accountOptions, isAdmin = false }: FinancesPageTabsProps) {
   const [activeTab, setActiveTab] = useState<TabType>('balances');
   const [balancesPage, setBalancesPage] = useState(1);
   const [withdrawsPage, setWithdrawsPage] = useState(1);
@@ -473,7 +474,13 @@ export function FinancesPageTabs({ balancesData, withdraws, expenditures, payout
 
       {activeTab === 'withdraws' && (
         <>
-          <WithdrawForm accounts={accountOptions} />
+          {isAdmin ? (
+            <WithdrawForm accounts={accountOptions} />
+          ) : (
+            <p className="rounded-lg border border-amber-200 bg-amber-50/50 px-4 py-3 text-sm text-amber-800">
+              Only admins can add withdrawals. Contact an admin to record a withdrawal.
+            </p>
+          )}
           <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden sm:rounded-xl">
             <div className="border-b border-gray-200 px-4 py-4 sm:px-6">
               <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Withdrawals</h2>
@@ -602,7 +609,13 @@ export function FinancesPageTabs({ balancesData, withdraws, expenditures, payout
 
       {activeTab === 'expenditures' && (
         <>
-          <ExpenditureForm />
+          {isAdmin ? (
+            <ExpenditureForm />
+          ) : (
+            <p className="rounded-lg border border-amber-200 bg-amber-50/50 px-4 py-3 text-sm text-amber-800">
+              Only admins can add expenditures. Contact an admin to record an expenditure.
+            </p>
+          )}
           <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden sm:rounded-xl">
             <div className="border-b border-gray-200 px-4 py-4 sm:px-6">
               <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Expenditures</h2>
@@ -722,7 +735,13 @@ export function FinancesPageTabs({ balancesData, withdraws, expenditures, payout
 
       {activeTab === 'payoutDetails' && (
         <>
-          <PayoutDetailForm accounts={accountOptions} />
+          {isAdmin ? (
+            <PayoutDetailForm accounts={accountOptions} />
+          ) : (
+            <p className="rounded-lg border border-amber-200 bg-amber-50/50 px-4 py-3 text-sm text-amber-800">
+              Only admins can add or update payout details. Contact an admin for changes.
+            </p>
+          )}
           <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden sm:rounded-xl">
             <div className="border-b border-gray-200 px-4 py-4 sm:px-6">
               <h2 className="text-base font-semibold text-gray-900 sm:text-lg">Payout Details</h2>

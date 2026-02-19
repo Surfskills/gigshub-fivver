@@ -1,6 +1,7 @@
 import React from "react"; // Ensure React is imported
 import { Suspense } from 'react';
 import Link from 'next/link';
+import { getCurrentUser } from '@/lib/auth';
 import { getAccountsRankedByPage } from '@/lib/queries/accounts';
 import { ExportButton } from '@/components/export-button';
 import { AccountsTable } from '@/components/tables/accounts-table';
@@ -96,7 +97,7 @@ function HeaderSkeleton() {
 }
 
 // Empty state component
-function EmptyState() {
+function EmptyState({ isAdmin }: { isAdmin: boolean }) {
   return (
     <div className="rounded-lg bg-white px-4 py-12 text-center shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl sm:px-6 sm:py-16">
       <svg
@@ -119,18 +120,20 @@ function EmptyState() {
       <p className="mt-2 text-sm text-gray-600 sm:text-base">
         Get started by creating your first freelancing account.
       </p>
-      <div className="mt-6">
-        <Link
-          href="/accounts/new"
-          prefetch
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 active:bg-blue-700 sm:px-5 sm:py-3 sm:text-base"
-        >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Add Your First Account
-        </Link>
-      </div>
+      {isAdmin && (
+        <div className="mt-6">
+          <Link
+            href="/accounts/new"
+            prefetch
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 active:bg-blue-700 sm:px-5 sm:py-3 sm:text-base"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Your First Account
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
@@ -149,7 +152,11 @@ export default async function AccountsPage({ searchParams }: PageProps) {
 
   const filter = search || level || status || platform ? { search, level, status, platform } : undefined;
 
-  const result = await getAccountsRankedByPage(page, filter);
+  const [user, result] = await Promise.all([
+    getCurrentUser(),
+    getAccountsRankedByPage(page, filter),
+  ]);
+  const isAdmin = user?.role === 'admin';
   const { accounts } = result;
 
   const accountsData = accounts.map((account) => ({
@@ -208,23 +215,25 @@ export default async function AccountsPage({ searchParams }: PageProps) {
               <Suspense fallback={<div className="h-10 w-20 animate-pulse bg-gray-200 rounded-md" />}>
                 <ExportButton type="accounts" />
               </Suspense>
-              <Link
-                href="/accounts/new"
-                prefetch
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 active:bg-blue-700 sm:px-5 sm:text-base"
-              >
-                <svg 
-                  className="h-4 w-4 sm:h-5 sm:w-5" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                  strokeWidth={2}
+              {isAdmin && (
+                <Link
+                  href="/accounts/new"
+                  prefetch
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 active:bg-blue-700 sm:px-5 sm:text-base"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-                <span className="hidden sm:inline">Add Account</span>
-                <span className="sm:hidden">Add</span>
-              </Link>
+                  <svg 
+                    className="h-4 w-4 sm:h-5 sm:w-5" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span className="hidden sm:inline">Add Account</span>
+                  <span className="sm:hidden">Add</span>
+                </Link>
+              )}
             </div>
           </div>
         </header>
@@ -314,7 +323,7 @@ export default async function AccountsPage({ searchParams }: PageProps) {
         {/* Main content area */}
         <Suspense fallback={<AccountsTableSkeleton />}>
           {accounts.length === 0 && !filter ? (
-            <EmptyState />
+            <EmptyState isAdmin={isAdmin} />
           ) : accounts.length === 0 ? (
             <div className="rounded-lg border border-gray-200 bg-white p-12 text-center text-gray-500">
               <p className="font-medium">No accounts match your filters</p>
