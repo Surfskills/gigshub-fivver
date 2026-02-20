@@ -1,6 +1,7 @@
 import HomePageClient from '@/components/home-client';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+import Head from 'next/head';
 
 const faqSchema = {
   '@context': 'https://schema.org',
@@ -58,6 +59,10 @@ export default async function HomePage() {
 
   return (
     <>
+      <Head>
+        <link rel="canonical" href="https://mini-gigs-hub.space/" />
+      </Head>
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
